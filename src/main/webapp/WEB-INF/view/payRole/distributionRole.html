@@ -1,0 +1,105 @@
+[#include "/common/taglibs.html"/]
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+				&times;
+			</button>
+			<h4 class="modal-title" id="myModalLabel">
+				角色分配
+			</h4>
+		</div>
+		<div class="modal-control">
+			<div id="second-ajax-modal" class="modal fade bs-modal bs-modal-large" tabindex="-1"></div>
+			[@form.form action="${ctx}/back/payRole/distributionRoleSave" method="POST" class="form-horizontal"]
+			<input type="hidden" name="format" value="json">
+			<input name="userIds" value="${user.id!}" type="hidden"/>
+			<input id="roles" name="roles" value="" type="hidden" />
+			<div class="modal-body">
+				<div class="form-body">
+					<div class="form-group">
+						<label class="col-md-3 control-label">用户名</label>
+						<div class="col-sm-8">
+							<div class="input-icon" style="line-height: 34px;">
+								${user.userName!}
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-3 control-label">昵称</label>
+						<div class="col-sm-8">
+							<div class="input-icon" style="line-height: 34px;">
+								${user.nickName!}
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-3 control-label">拥有角色</label>
+						<div class="col-sm-8">
+							<div class="table-container pre-scrollable">
+								<table class="table table-condensed table-bordered table-hover">
+									<thead>
+									<tr role="row" class="heading">
+										<th width="20"><input type="checkbox" id="allSelect"></th>
+										<th>角色名称</th>
+										<th>角色类型</th>
+									</tr>
+									</thead>
+									<tbody>
+									[#list roleList as role]
+									<tr>
+										<td><input type="checkbox" value="${role.id}" name="roleIds"/></td>
+										<td>${role.roleName}</td>
+									</tr>
+									[/#list]
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn default" data-dismiss="modal">[@spring.message code="form.button.close"/]</button>
+				<button type="submit" class="btn blue btn-success">[@spring.message code="form.button.submit"/]</button>
+			</div>
+			[/@form.form]
+		</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal -->
+<script type="text/javascript">
+    jQuery(document).ready(function() {
+        var allSubCheckboxs = $("input[name='roleIds']:checkbox");
+        var relateIds = "${roleIds}".split(",");
+        allSubCheckboxs.each(function() {
+            if($.inArray($(this).val(), relateIds) != -1) {
+                $(this).prop('checked', true);
+            }
+        });
+
+        var checkedBoxs = $("input[name='roleIds']:checkbox:checked");
+        if(checkedBoxs.length == allSubCheckboxs.length) {
+            $("#allSelect").prop('checked', true);
+        } else {
+            $("#allSelect").removeAttr('checked');
+        }
+
+        $("#allSelect").click(function() {
+            if($(this).is(":checked")) {
+                allSubCheckboxs.prop('checked', true);
+            } else {
+                allSubCheckboxs.removeAttr('checked');
+            }
+        });
+
+        allSubCheckboxs.click(function() {
+            var checkedBoxs = $("input[name='roleIds']:checkbox:checked");
+            if(checkedBoxs.length == allSubCheckboxs.length) {
+                $("#allSelect").prop('checked', true);
+            } else {
+                $("#allSelect").removeAttr('checked');
+            }
+        });
+
+    });
+</script>

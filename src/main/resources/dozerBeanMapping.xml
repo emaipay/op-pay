@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mappings xmlns="http://dozer.sourceforge.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://dozer.sourceforge.net http://dozer.sourceforge.net/schema/beanmapping.xsd">
+	<!-- 用于对象转换配置,如 Model 转换成 DTO -->
+	<configuration>
+		<custom-converters>
+			<converter type="com.hitler.core.dozer.DateTimeConverter">
+				<class-a>org.joda.time.DateTime</class-a>
+				<class-b>java.util.Date</class-b>
+			</converter>
+		</custom-converters>
+	</configuration>
+	
+ 
+	 
+	 
+</mappings> 

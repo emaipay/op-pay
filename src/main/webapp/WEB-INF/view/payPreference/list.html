@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+[#include "/common/head.html"/]
+<head>
+    <meta charset="UTF-8">
+    <title>Center</title>
+</head>
+<body class="gray-bg">
+<style>
+    .formleft {
+        margin-left: 10px;
+    }
+</style>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <!-- 模态框（Modal） -->
+    <form class="form-inline mb-20">
+      		 <div class="form-group mr-5">
+                <input type="text" class="form-control" name="search_LIKE_name" placeholder="常量值">
+          		<input type="text" class="form-control" name="search_LIKE_code" placeholder="常量code">
+                <button type="button"  class="mr-5 btn btn-sm btn-primary"  data-toggle="search"  style="width:100px;margin-left:20px"><i class="fa fa-search"></i>搜索</button>
+                <button class="btn btn-sm filter-cancel formleft" style="width:100px;"><i class="fa fa-times"></i> 重置</button>
+       </div>
+       <div class="t-right" style="margin-top: -32px;">
+              [@shiro.hasPermission name="payPreference/create"]  <a href="${ctx}/back/payPreference/create" class="mr-5 btn btn-sm btn-primary" data-toggle="modal"
+                   data-target="#ajax-modal"> <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> 新增</a>[/@shiro.hasPermission]
+       </div>
+
+    </form>
+	
+    <!-- ibox -->
+   <div class="portlet box light-green" style="margin-top:50px;">
+        <div class="portlet-body">
+            <div class="table-container">
+                            <table  border="0" cellpadding="0" cellspacing="0" class="table" data-toggle="table"  id="preference_list_table">
+                                <thead>
+                                <tr>
+                                	<th>操作</th>
+                                    <th>常量name</th>
+                                    <th>常量code</th>
+                                    <th>常量值</th>
+                                    <th >最后修改人</th>
+                                    <th>最后修改时间</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+</div>
+
+[#assign path="${ctx}/back/payPreference"/]
+
+<script>
+
+    var $table = $('#preference_list_table');
+
+    grid.init({
+        src: $table,
+        bootstrapTable: {
+            url: "${ctx}/back/payPreference",
+            fixedColumns: true,
+            fixedNumber: 3,//固定列（有问题-找高手解决）
+            columns: [
+                {
+                    field: 'id',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var str = '<a href="javascript:;" class="dropdown-toggle label label-info" data-toggle="dropdown">' +
+                                '<i class="fa fa-cog"></i> 操作 <b class="caret"></b></a>' +
+                                '<ul class="dropdown-menu dropdown-menu-left dropdown-menu-tree">' +
+                              
+                                '[@shiro.hasPermission name="payPreference/update"]<li><a href="${path}/update/' + row.id + '" data-toggle="modal" data-target="#ajax-modal">修改</a></li>[/@shiro.hasPermission]' +
+                                '[@shiro.hasPermission name="payPreference/delete"]<li><a href="${path}/delete/' + row.id + '" data-toggle="delete">删除</a></li>[/@shiro.hasPermission]' +
+                                
+                                  '</ul>';
+                        return str;
+                        
+                      
+                      
+                    }
+                },
+                {
+                    field: 'name',
+                    align: 'center'
+                } ,
+                {
+                    field: 'code',
+                    align: 'center',
+                     
+                } ,
+                {
+                    field: 'value',
+                    align: 'center',
+                     
+                } ,
+                {
+                    field: 'lastModifiedBy',
+                    align: 'center'
+                }, 
+                {
+                    field: 'lastModifiedDate',
+                    align: 'center'
+                }
+            ]
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,119 @@
+[#include "/common/taglibs.html"/]
+<link rel="stylesheet" type="text/css" href="${ctx}/resources/js/plugins/jstree/themes/components.css"/>
+<link rel="stylesheet" type="text/css" href="${ctx}/resources/js/plugins/jstree/themes/default/style.min.css"/>
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                &times;
+            </button>
+            <h4 class="modal-title" id="myModalLabel">
+                前台权限分配
+            </h4>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal m-t" id="addRoleForm">
+                <input name="roleId" value="${role.id!}" type="hidden"/>
+                <input id="permissions" name="permissions" value="" type="hidden" />
+                <div class=" control-group form-group">
+                    <label class="control-label">角色名</label>
+                    <div class="controls">
+                        <input id="roleName" name="roleName" class="form-control input-s-xlg" type="text" value="${role.roleName!}" readonly="readonly">
+                    </div>
+                </div>
+                <div class=" control-group form-group">
+                    <label class="control-label">拥有权限</label>
+                    <div class="controls">
+                        <div class="portlet green-meadow box">
+                            <div class="portlet-title">
+                                <div class="caption">
+                                    <i class="fa fa-cogs"></i>权限列表
+                                </div>
+                            </div>
+                            <div class="portlet-body">
+                                <div id="permission_container" class="tree-demo">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+            </button>
+            <button type="button" onclick="submit();" class="btn btn-primary btn-success">
+                保存
+            </button>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal -->
+
+
+<script type="text/javascript">
+
+    function submit() {
+        var checked_ids = [];
+        $.each($("#permission_container").jstree("get_selected", true), function(i,v) {
+            checked_ids.push($(v).attr("id"));
+        });
+
+        checked_ids = checked_ids.length == 0 ? "" : checked_ids.join(",");
+        $("#permissions").val(checked_ids);
+
+        //
+        ajaxPostSubmit("${ctx}/back/payPermission/batch","addRoleForm");
+    }
+    $(function() {
+        $("#permission_container").jstree({
+            "core": {
+                "themes": {
+                    "responsive": false
+                },
+                "data": {
+                    "url": "payPermission/json",
+                    "dataType": "json"
+                },
+                "check_callback": true
+            },
+            "checkbox": {
+                "three_state": false
+            },
+            "types": {
+                "default": {
+                    "icon": "fa fa-lock icon-state-info icon-lg"
+                },
+                "file": {
+                    "icon": "fa fa-lock icon-state-info icon-lg"
+                }
+            },
+            "plugins": [ "checkbox", "types" ]
+        }).bind("select_node.jstree", function (node, selected, event) {
+            $("#permission_container").jstree().select_node(selected.node.parent);
+        }).bind("click.jstree", function (event) {
+            var node = event.target;
+            if (node.nodeName == 'I' && node.parentNode.nodeName == 'A') {
+                var jsNode = $("#permission_container").jstree().get_node(node.parentNode);
+                if(jsNode.state.selected) {
+                    $("#permission_container").jstree().select_node(jsNode.parent);
+                    $("#permission_container").jstree().select_node(jsNode.children_d);
+                } else {
+                    $("#permission_container").jstree().deselect_node(jsNode.children_d);
+                }
+            } else if (node.nodeName == 'A') {
+                var jsNode = $("#permission_container").jstree().get_node(node);
+                if(jsNode.state.selected) {
+                    $("#permission_container").jstree().select_node(jsNode.parent);
+                    $("#permission_container").jstree().select_node(jsNode.children_d);
+                } else {
+                    $("#permission_container").jstree().deselect_node(jsNode.children_d);
+                }
+            }
+        }).bind("loaded.jstree", function(e, data) {
+            var selectedIds = "${permissionIds}";
+            selectedIds = selectedIds.split(",");
+            $("#permission_container").jstree().select_node(selectedIds);
+        });
+
+    });
+</script>

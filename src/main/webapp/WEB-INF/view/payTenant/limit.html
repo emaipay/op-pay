@@ -1,0 +1,118 @@
+[#include "/common/taglibs.html"/]
+<div class="modal-dialog" style="width:1200px">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+				&times;
+			</button>
+			<h4 class="modal-title" id="myModalLabel">
+				限额分配
+			</h4>
+		</div>
+		<div class="modal-control">
+			<div id="second-ajax-modal" class="modal fade bs-modal bs-modal-large" tabindex="-1"></div>
+			[@form.form action="${ctx}/back/payTenant/limitSave" method="POST" id="mainForm" class="form-horizontal"]
+			<input name="tenantId" value="${tenanId}" type="hidden"/>
+			<div class="modal-body">
+				<div class="form-body">
+					<div class="form-group">
+						<label class="col-md-3 control-label">客户名</label>
+						<div class="col-sm-8">
+							<div class="input-icon" style="line-height: 34px;">
+								${tenanName}
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-3 control-label">限额配置</label>
+						<div class="col-sm-8">
+							<div class="table-container">
+								<div class="ext-mb10">
+                					<button type="button" onclick="addLimit()" class="btn btn-sm btn-info">新增</button>
+					            </div>
+								<table class="table table-condensed table-bordered table-hover">
+									<thead>
+									<tr role="row" class="heading">
+										<th>支付类型</th>
+										<th>每日最大充值金额</th>
+										<th>每日最大充值次数</th>
+										<th>单笔最大充值金额</th>
+										<th>单笔最小充值金额</th>
+										<th>操作</th>
+									</tr>
+									</thead>
+									<tbody id="limitTbody">
+									[#list limitList as limit]
+									<tr>
+										<td>
+										  <select name="platformId">
+										  	  [#list ppList as pp]
+										  	  	<option value="${pp.id}" [#if limit.platformId == pp.id ]selected="selected"[/#if]>${pp.name}</option>
+										  	  [/#list]
+										  </select>
+										</td>
+										<td><input name='dailyRechargeAmountMax' value="${limit.dailyRechargeAmountMax}"/></td>
+										<td><input name='dailyRechargeTimesMax' value="${limit.dailyRechargeTimesMax}"/></td>
+										<td><input name='onetimeRechargeAmountMax' value="${limit.onetimeRechargeAmountMax}"/></td>
+										<td><input name='onetimeRechargeAmountMin' value="${limit.onetimeRechargeAmountMin}"/></td>
+										<td><button type="button" onclick='deleteLimit(this)' class="btn btn-sm btn-info">删除</button>
+										</td>
+									</tr>
+									[/#list]
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn default" data-dismiss="modal">取消</button>
+				<button type="button" onclick="goSubmit()"  class="btn blue" style="background-color:#1a7bb9;border-color:#1c84c6;color:#fff">提交</button>
+			</div>
+			[/@form.form]
+		</div>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal -->
+<script type="text/javascript">
+    jQuery(document).ready(function() {
+    	
+    });
+    var platformId=[];
+    function goSubmit(){
+    	var flag=false;
+    	$.each($("#limitTbody").find("tr"),function(i,v){
+    		var selVal=$(this).find("select").val();
+    		if($.inArray(selVal, platformId) != -1) {
+    			 layer.msg("支付类型不能有相同的！", {time: 3000});
+    			 flag=true;
+    		}
+    		platformId[i]=selVal;
+    	});
+    	if(flag){
+    		platformId=[];
+    		return;
+    	}
+    	$("#mainForm").submit();
+    }
+    function addLimit(){
+		var ppList=JSON.parse('${pp}');
+		var trs = "<tr>"+
+		          "<td><select name='platformId'>";
+		          for(var i=0;i<ppList.length;i++){
+		        	  trs+="<option value="+ppList[i].id+">"+ppList[i].name+"</option>";
+		          }
+		          trs+="</select></td>"+
+		          "<td><input name='dailyRechargeAmountMax'/></td>"+
+		          "<td><input name='dailyRechargeTimesMax'/></td>"+
+		          "<td><input name='onetimeRechargeAmountMax'/></td>"+
+		          "<td><input name='onetimeRechargeAmountMin'/></td>"+
+		          "<td><button type='button' onclick='deleteLimit(this)' class='btn btn-sm btn-info'>删除</button></td>"+
+		          "</tr>"
+
+		$("#limitTbody").append(trs);
+	}
+    function deleteLimit(obj){
+    	$(obj).parent().parent().remove();
+    }
+</script>

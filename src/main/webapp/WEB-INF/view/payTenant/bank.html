@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+[#include "/common/taglibs.html"/]
+
+<head>
+<meta charset="UTF-8">
+<title>Center</title>
+<style type="text/css">
+table {
+	height: 100px;
+	border-color: #F3F3F4;
+	border: 1px solid #F3F3F4;
+	z-index: 9999;
+}
+
+table tr {
+	line-height: 18px;
+	height: 18px;
+	font-weight: normal;
+}
+
+.choice_tr:HOVER {
+	background: #23C6C8;
+	cursor: pointer;
+	color: black;
+}
+
+table img {
+	height: 25px;
+}
+
+.tr_title {
+	background: #F3F3F4;
+	font-weight: bold;
+}
+
+.ibox-content, .modal-footer {
+	border: none
+}
+.s1 {
+ background-color: #23C6C8;
+}
+</style>
+</head>
+<body class="gray-bg">
+	<div class="modal-dialog modal-lg" style="width: 1270px;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true"></button>
+				<h4 class="modal-title">在线支付</h4>
+			</div>
+
+			<div class="modal-control">
+				<div id="second-ajax-modal"
+					class="modal fade bs-modal bs-modal-large" tabindex="-1"></div>
+				[@form.form method="POST" action="${ctx}/back/payTenant/bank" class="form-horizontal form"]
+				<input type="hidden" id="pmBankids" name="pmBankids" value="">
+				<input id="tenantId" name="tenantId" type="hidden" value="${tenantId}"/>
+				<!--线上平台充值 -->
+				<div class="ibox-content">
+					<div class="row row-lg">
+						<div class="col-sm-12">
+							<div class="col-md-12 col-sm-12">
+								<div class="table-group-actions pull-left">线上支付平台充值</div>
+							</div>
+						</div>
+					</div>
+					<div class="row row-lg">
+						<div class="col-sm-12">
+
+							<div class="table-container pre-scrollable"
+								style="height: 200px;">
+
+
+								<table border="1" cellpadding="0" cellspacing="0"
+									class="table paymerchant" id="merchant_table">
+									<thead>
+										<tr class="tr_title">
+											<th>选择</th>
+											<th>支付平台</th>
+											<th>商户号</th>
+											<th>商户名称</th>
+											<th>终端号</th>
+											<th>手续费比例</th>
+											<th>当前余额</th>
+											<th>预警金额</th>
+											<th>状态</th>
+
+										</tr>
+
+									</thead>
+									<tbody id="merchantTbody">
+										[#list paymentMerchantList as item]
+										<tr style="cursor:pointer" id="mer${item.id}" value="${item.id}"
+											onClick="merTrClick(this)">
+											<th><input type="checkbox" value="${item.id}"  id="merchantCheck_${item_index}" name="paymentMerchantId_cb"
+											[#list relateMerchants as rel]
+												[#if rel.id == item.id ]checked="checked"[/#if]
+											[/#list]
+											></th>
+											<th>${item.platformId.name}</th>
+											<th>${item.merchantNo}</th>
+											<th>${item.merchantName}</th>
+											<th>${item.terminalNo}</th>
+											<th>${item.feePercent}</th>
+											<th>${item.currentBalance}</th>
+											<th>${item.warningAmount}</th>
+											<th>[#if item.available==true]可用[/#if][#if
+												item.available==false]禁用[/#if]</th>
+										</tr>
+										[/#list]
+									</tbody>
+								</table>
+							</div>
+						</div>
+
+
+
+
+						<!-- 线下银行 -->
+
+						<div class="ibox-content">
+							<div class="row row-lg">
+								<div class="col-sm-12">
+									<div class="col-md-12 col-sm-12">
+										<div class="clearfix hidden-xs"></div>
+										<div class="clearfix hidden-xs"></div>
+										<div class="table-group-actions pull-left">线下网银充值</div>
+									</div>
+								</div>
+							</div>
+							<div class="row row-lg">
+								<div class="col-sm-12">
+
+									<div class="table-container pre-scrollable"
+										style="height: 200px;">
+
+
+										<table border="1" cellpadding="0" cellspacing="0"
+											class="table" id="bank_table">
+											<thead>
+												<tr class="tr_title">
+
+													<th><input type="checkbox" 
+														id="allSelectBank"></th>
+													<th data-sortable="true">银行名称</th>
+													<th data-sortable="true">银行简称</th>
+													<th data-sortable="true">银行Logo</th>
+													<th data-sortable="true">线下充值状态</th>
+													<th data-sortable="true">是否允许绑定</th>
+
+												</tr>
+
+											</thead>
+											<tbody id="pbTbody">
+
+											</tbody>
+										</table>
+
+									</div>
+
+									<div class="modal-footer">
+										<button type="button" class="btn default" data-dismiss="modal">关闭</button>
+										<button type="button" class="btn blue btn-success"
+											onclick="goSubmit() ">提交</button>
+									</div>
+
+								</div>
+							</div>
+
+							[/@form.form]
+						</div>
+					</div>
+				</div>
+
+				[#assign path="${ctx}/back/payTenant"/]
+
+				<script>
+				
+				var paymentBankListJson, ulpmbListJson,paymentMerchantListJson;
+				var pmBankids={};//选中银行ID集合
+				var pmBank={};//付款银行集合
+				var pmBankInitId=[];
+				var pmId2 = 0;
+
+				//上一次点击的商户行的对象
+				var preClickMerTr = null;
+
+				function merTrClick(eventObj){
+					console.log("merTrClick");
+					var currentTr =$(eventObj)
+					var id=currentTr.attr("value");
+					var preId=preClickMerTr==null?null:preClickMerTr.attr("value");
+					if(id == preId) {
+						return;
+					}
+					currentTr.css('background-color','#7EC0EE');
+					if (preClickMerTr != null ){
+						preClickMerTr.css('background-color','white');
+					}
+					preClickMerTr = currentTr;
+					changePaymentBank(id);
+				}
+
+				function changePaymentBank(pmId,obj) {
+					pmId2 = pmId;
+					var bankIds = [];	//存放应该选中的银行的ID
+					//var radio_index = $(obj).parent().parent().index();	//排列数字 
+					$.each(paymentMerchantListJson, function(i, v) {
+						if(v.id == pmId) {//1:宝付  5:易付宝
+							initBank(v.platformId.id);
+							return true;
+						}
+					});
+					$("input[name='bankIds']:checkbox").each(function(index) {
+						if(!pmBankids[pmId2]){
+							pmBankids[pmId2] = [];
+						}
+						if($.inArray(parseInt($(this).val()), pmBankids[pmId2]) != -1) {
+							$(this).attr('checked', 'checked');
+						} else {
+							$(this).attr('checked', false);
+						}
+					});
+					
+					if($("input[name='bankIds']:checkbox").length == $("input[name='bankIds']:checkbox:checked").length) {
+						$("#allSelectBank").attr('checked', 'checked');
+					} else {
+						$("#allSelectBank").attr('checked', false);
+					}
+					//$.uniform.update($("input:checkbox"));
+				}
+
+				function initBank(index) {
+					var trs = '';
+					if(!pmBank[index]){
+						$('#pbTbody').html(trs);
+						return;
+					}
+					$.each(pmBank[index], function(i,v) {
+						trs +=
+						'<tr>'+
+							'<td width="35"><input type="checkbox" value="' + v.bankId.id + '" name="bankIds"/></td>' +
+							'<td>' + v.bankId.name + '</td>' +
+							'<td>' + v.bankId.shortName + '</td>' +
+							'<td><img src="'+v.bankId.logoFilePath+'" /></td>' +
+							'<td>';
+						if(v.bankId.bankTransferStatus == '开放') {
+							trs += '<span class="label label-sm label-success">开放</span>';
+						} else {
+							trs += '<span class="label label-sm label-danger">关闭</span>';
+						}
+						trs += '</td>' + 
+							'<td>';
+						if(v.bankId.allowBindingStatus == '开放') {
+							trs += '<span class="label label-sm label-success">开放</span>';
+						} else {
+							trs += '<span class="label label-sm label-danger">关闭</span>';
+						}
+						trs += '</td>' + 
+							'</tr>';
+					});
+					
+					$('#pbTbody').html(trs);
+
+					var allSubCheckboxsBank = $("input[name='bankIds']:checkbox");
+					//var relateBankIds = eval('('+'${relateBankIds}'+')');
+					allSubCheckboxsBank.each(function() {
+						if($.inArray(parseInt($(this).val()), pmBankids[pmId2]) != -1) {
+							$(this).attr('checked', 'checked');
+						}
+					});
+					
+					var checkedBoxsBank = $("input[name='bankIds']:checkbox:checked");
+					if(checkedBoxsBank.length == allSubCheckboxsBank.length) {
+						$("#allSelectBank").attr('checked', 'checked');
+					} else {
+						$("#allSelectBank").removeAttr('checked');
+					}
+					
+					$("#allSelectBank").click(function() {
+				 		pmBankids[pmId2].length = 0;
+						if($(this).is(":checked")) {
+							allSubCheckboxsBank.attr('checked', 'checked');							$.each($("input[name='bankIds']:checkbox:checked"),function(i,v){
+								pmBankids[pmId2].push($(this).val()/1);
+							});
+						} else {
+							allSubCheckboxsBank.removeAttr('checked');
+						}
+						//$.uniform.update(allSubCheckboxsBank);
+					});
+					
+					allSubCheckboxsBank.click(function() {
+						var checkedBoxsBank = $("input[name='bankIds']:checkbox:checked");
+						if(checkedBoxsBank.length == allSubCheckboxsBank.length) {
+							$("#allSelectBank").attr('checked', 'checked');
+						} else {
+							$("#allSelectBank").removeAttr('checked');
+						}
+						//$.uniform.update($("#allSelectBank"));
+					});
+					
+					//Metronic.initUniform($('input[type="checkbox"]'));
+				}
+
+				function ulpmbListJson_data(){
+						var cb_id=[];
+						$.each(ulpmbListJson,function(i,v){
+							if(!pmBankids[v.payMerchantId.id]){
+								pmBankids[v.payMerchantId.id] = [];
+								pmBankids[v.payMerchantId.id].push(v.payBankId.bankId.id);
+								cb_id.push(v.payMerchantId.id);
+								pmBankInitId.push(v.payMerchantId.platformId.id);
+							}else{
+								pmBankids[v.payMerchantId.id].push(v.payBankId.bankId.id);
+							}
+						});
+						initPaymentPlatformCheckbox(cb_id);
+						
+				}
+
+				function paymentBankListJson_data(){
+						$.each(paymentBankListJson,function(i,v){
+							if(!pmBank[v.payPlatformId.id]){
+								pmBank[v.payPlatformId.id] = [];
+								pmBank[v.payPlatformId.id].push(v);
+							}else{
+								pmBank[v.payPlatformId.id].push(v);
+							}
+						});
+				}
+
+				function initPaymentPlatformCheckbox(cb_id){
+					$.each($("input[name='paymentMerchantId_cb']:checkbox"),function(i,v){
+							if($.inArray(parseInt($(this).val()),cb_id)!=-1){
+								$(this).attr('checked','checked');
+							};
+					});
+				}
+
+				function goSubmit() {
+					var notSubBankMerId=null;
+					$.each($("input[name='paymentMerchantId_cb']:checkbox"),function(i,v){
+							if($(this).is(":checked")){
+								if(!pmBankids[$(this).val()]||pmBankids[$(this).val()].length==0){
+									notSubBankMerId=$(v).attr("value");
+								}
+							}else{
+								if(pmBankids[$(this).val()]){
+									pmBankids[$(this).val()].length = 0;
+								}
+							}
+							
+					});
+					if(notSubBankMerId != null){
+						merTrClick($("#mer"+notSubBankMerId).get(0));
+						layer.alert("请勾选商户支持的支付银行！");
+						return false;
+					}
+					
+					$("#pmBankids").val(JSON.stringify(pmBankids));
+					//$("#command").submit();
+					return;
+				}
+
+				$(function() {
+					var relateMerchantId=eval('('+'${relateMerchantId}'+')');
+					paymentMerchantListJson=eval('('+'${paymentMerchantListJson}'+')');
+					paymentBankListJson = eval('('+'${paymentBankList}'+')');
+					ulpmbListJson = eval('('+'${ulpmbList}'+')');
+					ulpmbListJson_data();
+					paymentBankListJson_data();
+					if(pmId2==0){
+						pmId2=relateMerchantId;
+					}
+					initBank(pmBankInitId[0]);
+					
+					//默认选中第一行
+					merTrClick($("#merchant_table tbody tr:first"));
+					
+					
+					/* var paymentMerchan_cb=$("input[name='paymentMerchantId_cb']:checkbox");
+					$("#allSelectPaymentBank").click(function(){
+						var isChecked=$(this).prop("checked");
+						alert(isChecked);
+						paymentMerchan_cb.prop("checked",isChecked);
+					}); */
+					
+				});
+
+				$(document).on('click',"input[name='bankIds']", function(){
+				     if($(this).is(":checked")){
+							pmBankids[pmId2].push($(this).val()/1);
+						}else{
+							var tem = $.inArray(parseInt($(this).val()), pmBankids[pmId2]);
+							if(tem != -1){
+								pmBankids[pmId2].splice(tem,1);
+							}
+						}
+						//console.log(pmBankids);
+				});
+	
+ 
+</script>
+</body>
+
+</html>

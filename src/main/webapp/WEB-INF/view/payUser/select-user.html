@@ -1,0 +1,108 @@
+[#include "/common/taglibs.html"/]
+<div class="modal-dialog modal-lg" style="width:950px;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            <h4 class="modal-title">选择指定用户</h4>
+        </div>
+
+        <div class="modal-control">
+            <div class="modal-body">
+                <form class="form-inline mb-10">
+                     <div class="form-group mr-5">
+                        <input class="form-control search-query mr-5" name="search_LIKE_userName"
+                               type="text" placeholder="请输入账号">
+                        <input class="form-control search-query mr-5" name="search_LIKE_nickName"
+                               type="text" placeholder="请输入昵称">
+                        <select name="search_EQ_accountType" class="form-control mr-10">
+                            <option value="">账号类型</option>
+                            [#list enums["com.hitler.entity.PayUser$AccountType"]?values as item]
+                            <option value="${item.name()}">${item.name()}</option>
+                            [/#list]
+                        </select>
+					</div>
+                    <button type="button" class="btn btn-sm btn-primary" data-toggle="search"><i class="fa fa-search"></i>搜索</button>
+                </form>
+                <div class="portlet box light-green">
+                    <div class="portlet-body">
+                        <div class="table-container">
+                            <table id="select-user-table" data-toggle="table">
+                                <thead>
+                                <th><input type="checkbox" class="group-checkable"></th>
+                                <th>帐号</th>
+                                <th>昵称</th>
+                                <th>帐号类型</th>
+                                <th>账户状态</th>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+
+                            <div class="clearfix hidden-xs"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-success" data-dismiss="modal" id="confirmSelectParent">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var $userTable = $('#select-user-table');
+    var userGrid = new Datatable();
+    userGrid.init({
+        src: $userTable,
+        bootstrapTable: {
+            "url": "${ctx}/back/payUser",
+            "columns": [
+                {
+                    radio: "id"
+                },
+                {field: "userName"},
+                {field: "nickName"},
+                {field: "accountType",
+                 align: 'center',
+                 formatter: function (value, row, index) {
+                    	console.log(value);
+                        return value == '管理员' ? '<span class="label label-sm label-success">' + value + '</span>' : '<span class="label label-sm label-danger">' + value + '</span>';
+                	}
+                }, 
+                {
+                    field: 'accountLocked',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        return value == '正常' ? '<span class="label label-sm label-success">' + value + '</span>' : '<span class="label label-sm label-danger">' + value + '</span>';
+                   }
+                },
+                {
+                    field: 'loginLocked',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        return value == true ? '<span class="label label-sm label-success">' + '已锁定' + '</span>' : '<span class="label label-sm label-danger">' + '未锁定' + '</span>';
+                    }
+                }
+            ]
+        }
+    });
+</script>
+<script type="text/javascript">
+
+    jQuery(document).ready(function () {
+        $("#confirmSelectParent").click(function () {
+            var checkedObj = $userTable.bootstrapTable('getSelections');
+            if (checkedObj.length != 0) {
+                var userNames = [];
+                $.each(checkedObj, function (index ,obj) {
+                    userNames.push(obj.userName);
+                });
+                $("#userName").val(userNames);
+            } else {
+                $("#userName").val("");
+            }
+        });
+    });
+</script>

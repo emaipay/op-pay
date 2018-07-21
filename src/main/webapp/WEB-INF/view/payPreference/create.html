@@ -1,0 +1,108 @@
+[#include "/common/taglibs.html"/]
+
+<div class="modal-dialog modal-lg">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"
+				aria-hidden="true"></button>
+			<h4 class="modal-title">新增参数</h4>
+		</div>
+
+		<div class="modal-control">
+			<div id="second-ajax-modal"
+				class="modal fade bs-modal bs-modal-large" tabindex="-1"></div>
+			[@form.form commandName="createDTO" method="POST"
+			class="form-horizontal"] <input type="hidden" name="format"
+				value="json">
+				<input type="hidden" name="createdBy" value="管理员">
+			<div class="modal-body">
+				<div class="form-body">
+					<div class="form-group">
+						<label class="col-md-3 control-label">常量名称</label>
+						<div class="col-md-9">
+							<div class="input-icon">
+								[@spring.bind path="name"] <input id="${status.expression}"
+									name="${status.expression}" type="text" class="form-control"
+									placeholder="常量名称"> [/@spring.bind]
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-3 control-label">常量code</label>
+						<div class="col-md-9">
+							<div class="input-icon">
+								[@spring.bind path="code"] <input id="${status.expression}"
+									name="${status.expression}" type="text" class="form-control"
+									placeholder="常量code"> [/@spring.bind]
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-3 control-label">常量值</label>
+						<div class="col-md-9">
+							<div class="input-icon">
+								[@spring.bind path="value"] <input id="${status.expression}"
+									name="${status.expression}" type="text" class="form-control"
+									placeholder="常量值"> [/@spring.bind]
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-3 control-label">备注信息</label>
+						<div class="col-md-9">
+							<div class="input-icon">
+								[@spring.bind path="remark"] 
+								
+								 <input id="${status.expression}"
+									name="${status.expression}" type="text" class="form-control"
+									placeholder="备注信息">
+								 
+                      
+							     [/@spring.bind]
+							</div>
+						</div>
+					</div>
+				 </div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn blue btn-success"
+					>提交</button>
+			</div>
+			[/@form.form]
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+	function validateForm() {
+		$('#createDTO').submit();
+	}
+
+	$('#createDTO').validate({
+		rules : {
+
+			name : {
+				required : true
+			},
+			value : {
+				required : true
+			},
+			code : {
+				required : true
+			} 
+		},
+		messages : {
+			name : {
+				required : "名称不能为空！",
+			},
+			value : {
+				required : "值不能为空！"
+			},
+			code : {
+				required : "code不能为空！"
+			} 
+		}
+	});
+</script>

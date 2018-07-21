@@ -1,0 +1,122 @@
+<#assign spring = JspTaglibs["http://www.springframework.org/tags"]/>
+<#assign form = JspTaglibs["http://www.springframework.org/tags/form"]/>
+<#assign shiro = JspTaglibs["http://shiro.apache.org/tags"]/>
+<!-- BEGIN HEAD -->
+
+<!--
+                   _ooOoo_
+                  o8888888o
+                  88" . "88
+                  (| -_- |)
+                  O\  =  /O
+               ____/`---'\____
+             .'  \\|     |//  `.
+            /  \\|||  :  |||//  \
+           /  _||||| -:- |||||-  \
+           |   | \\\  -  /// |   |
+           | \_|  ''\---/''  |   |
+           \  .-\__  `-`  ___/-. /
+         ___`. .'  /--.--\  `. . __
+      ."" '<  `.___\_<|>_/___.'  >'"".
+     | | :  `- \`.;`\ _ /`;.`/ - ` : | |
+     \  \ `-.   \_ __\ /__ _/   .-` /  /
+======`-.____`-.___\_____/___.-`____.-'======
+                   `=---='
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+　　　　　　　佛祖保佑　永无BUG
+-->
+
+<head>
+	<meta charset="utf-8"/>
+	<title>首页</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta content="width=device-width, initial-scale=1" name="viewport"/>
+	<meta content="" name="description"/>
+	<meta content="" name="author"/>
+	<!-- [if lt IE 8]>
+		<!-- <meta http-equiv="refresh" content="0;ie.html" /> -->
+	<![endif] -->
+<!--	<link rel="shortcut icon" href="${ctx}/resources/favicon.ico">
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/css/bootstrap.min.css?v=3.3.5">
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/css/font-awesome.min.css?v=4.4.0">
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/css/animate.min.css">
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/css/style.min.css?v=4.0.0">
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/css/plugins/bootstrap-table/bootstrap-table.min.css">
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/css/plugins/bootstrap-table/bootstrap-table-fixed-columns.css">
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/js/plugins/bootstrap-modal/css/bootstrap-modal.css">
+
+
+	<script type="text/javascript" src="${ctx}/resources/js/jquery.min.js?v=2.1.4"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/layer/layer.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/bootstrap.min.js?v=3.3.5"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/hplus.min.js?v=4.0.0"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/contabs.min.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+	&lt;!&ndash; bootstrap-table-fixed-columns1.js为了兼容ie改造过的&ndash;&gt;
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/bootstrap-table/bootstrap-table-fixed-columns1.js"></script>
+	&lt;!&ndash; bootstrap-table-fixed-columns1.js为了兼容ie改造过的&ndash;&gt;
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/laydate/laydate.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/validate/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/boostraptable.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/bootstrap-modal/js/bootstrap-modal.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/bootstrap-modal/js/bootstrap-modalmanager.js"></script>-->
+
+	<!--前端调整后的-->
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/css/animate.min.css">
+	<!--<link rel="stylesheet" type="text/css" href="${ctx}/resources/css/base.min.css?v=bootstrap.min.css?v=3.3.5+font-awesome.min.css?v=4.4.0+animate.min.css" rel="stylesheet">-->
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/css/style.min.css?v=4.0.0">
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/css/plugins/bootstrap-table/bootstrap-table.min.css">
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/css/plugins/bootstrap-table/bootstrap-table-fixed-columns.css">
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/js/plugins/bootstrap-modal/css/bootstrap-modal.css">
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/js/plugins/bootstrap-select/bootstrap-select.min.css">
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/js/plugins/layer/skin/default/layer.css">
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/js/plugins/laydate/need/laydate.css">
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/js/plugins/rangeslider/css/ion.rangeSlider.css">
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/js/plugins/rangeslider/css/ion.rangeSlider.Metronic.css">
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/css/plugins/select2/select2.min.css">
+
+
+	<!--<script type="text/javascript" src="${ctx}/resources/js/base.min.js?v=jquery.min.js?v=2.1.4+bootstrap.min.js?v=3.3.5"></script>-->
+	<script type="text/javascript" src="${ctx}/resources/js/jquery.min.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/layer/layer.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/hplus.min.js?v=4.0.0"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/contabs.min.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+   <script type="text/javascript" src="${ctx}/resources/js/bootstrap-table-fixed-columns-ext.js"></script>  
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/boostraptable.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/jquery-form/js/jquery.form.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/validate/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/validate/jquery.validate.extend.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/laydate/laydate.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/bootstrap-modal/js/bootstrap-modal.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/bootstrap-modal/js/bootstrap-modalmanager.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/bootstrap-select/bootstrap-select.min.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/rangeslider/js/ion-rangeSlider/ion.rangeSlider.min.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/select2/select2.full.min.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/select2/select2.min.js"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/common.js"></script>
+	<script>
+        ;!function(){
+            laydate.skin('molv');
+        }();
+	</script>
+	<!-- <style type="text/css">
+		.laydate-icon {
+			height: 30px;
+			line-height: 30px;
+		}
+	</style> -->
+</head>
+<!-- END HEAD -->
+	<!-- 模态框（Modal）新增修改弹出页面 -->
+	<div id="ajax-modal" class="modal fade" role="dialog" aria-labelledby="myModalLabel"  tabindex="-1"></div>

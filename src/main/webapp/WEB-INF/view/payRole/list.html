@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+[#include "/common/head.html"/]
+<head>
+	<meta charset="UTF-8">
+	<title>Center</title>
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/js/plugins/jstree/themes/default/style.min.css"/>
+
+</head>
+<body class="gray-bg">
+[#assign path="${ctx}/back/payRole"/]
+<div class="wrapper wrapper-content animated fadeInRight">
+	<!-- 模态框（Modal） -->
+	<form class="form-inline mb-20" action="javasript:void(0);">
+		<div class="form-group mr-5">
+			<input type="text" class="form-control" name="search_LIKE_roleName" placeholder="请输入角色名称" autofocus>
+		</div>
+		<button type="button" class="mr-5 btn btn-sm btn-primary" data-toggle="search"><i class="fa fa-search"></i> 搜索</button>
+		<button type="button" class="mr-5 btn btn-sm btn-warning" data-toggle="reset"><i class="fa fa-times"></i> 重置</button>
+		<div class="t-right" style="margin-top: -32px;">
+		[@shiro.hasPermission name="payRole/create"]
+			<a href="${ctx}/back/payRole/create" class="btn btn-sm btn-primary" data-toggle="modal"  data-target="#ajax-modal"> <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> 新增</a>
+		[/@shiro.hasPermission]
+		</div>
+	</form>
+	<div class="portlet box light-green" style="margin-top:50px">
+
+		<div class="portlet-body">
+			<div class="table-container">
+					<table border="0" cellpadding="0" cellspacing="0" class="table" data-toggle="table" id="testTable">
+						<thead>
+						<tr>
+							<th data-sortable="true" data-width="20px">操作</th>
+							<th data-sortable="true">角色名称</th>
+						</tr>
+						</thead>
+						<tbody>
+
+						</tbody>
+					</table>
+			</div>
+		</div>
+
+	</div>
+
+</div>
+<script src="${ctx}/resources/js/plugins/jstree/jstree.min.js" type="text/javascript"></script>
+<script>
+
+	//以下方法抽成公共,需要引用在初始化
+	var $table = $('#testTable');
+	grid.init({
+		src: $table,
+		bootstrapTable: {
+			"url": "${path}",
+			"columns":[
+				{
+					field: 'id',
+					align: 'center',
+                    formatter:function(value,row,index){
+                        var str= '<a href="javascript:;" class="dropdown-toggle label label-info" data-toggle="dropdown">'+
+                            '<i class="fa fa-cog"></i> 操作 <b class="caret"></b></a>'+
+                            '<ul class="dropdown-menu dropdown-menu-left dropdown-menu-tree">'+
+                            '[@shiro.hasPermission name="payRole/delete"]<li><a href="javascript:;" onclick="delRole(' + row.id + ')" >删除</a></li>[/@shiro.hasPermission]'+
+                            '[@shiro.hasPermission name="payPermission/tree"]<li><a href="${ctx}/back/payPermission/tree/'+row.id+'" data-toggle="modal" data-target="#ajax-modal">权限分配</a></li>[/@shiro.hasPermission]'+
+                            '</ul>';
+                        return str;
+                    }
+				},{
+					field: 'roleName',
+					align: 'center',
+				}
+			]
+		}
+	});
+    function delRole(id){
+        layer.confirm('您确定执行该操作？', {
+            btn: ['确定','取消'] //按钮
+        }, function(){
+            $.ajax({
+                url:"${path}/ajaxdel/"+id,
+                type:"GET",
+                success:function(data){
+                    if(data.success != undefined && !data.success){
+                        layer.msg(data.respMsg,{time:3000});
+                    } else {
+                        layer.msg("操作成功！",{time:3000});
+                        $table.bootstrapTable("refresh","${path}");
+                    }
+                }
+            })
+        });
+    }
+</script>
+</body>
+</html>

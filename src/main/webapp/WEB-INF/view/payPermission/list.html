@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+[#include "/common/head.html"/]
+<head>
+	<meta charset="UTF-8">
+	<title>Center</title>
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/js/plugins/jstree/themes/components.css"/>
+	<link rel="stylesheet" type="text/css" href="${ctx}/resources/js/plugins/jstree/themes/default/style.min.css"/>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+	<!-- ibox -->
+	<div class="ibox float-e-margins">
+		<div class="ibox-content">
+			<div class="row row-lg">
+				<div class="col-sm-12">
+					<div class="example-wrap">
+						<div class="example">
+							<div class="portlet">
+								<!--<div class="portlet-title">
+									<div class="caption">
+										<i class="fa fa-list-ul"></i>权限资源
+									</div>
+								</div>-->
+								<div class="portlet-body">
+									<div class="col-md-12">
+										<div class="portlet green-meadow box">
+											<div class="portlet-title">
+												<div class="caption">
+													<i class="fa fa-cogs"></i>权限列表
+												</div>
+												<div class="tools">
+													<a href="javascript:;" class="collapse">
+													</a>
+													<a href="javascript:;" class="reload">
+													</a>
+												</div>
+											</div>
+											<div class="portlet-body" style="height:500px;overflow:auto;">
+												<div id="permission_container" class="tree-demo">
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div id="container">
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+				<div class="clearfix hidden-xs"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="${ctx}/resources/js/plugins/jstree/jstree.min.js" type="text/javascript"></script>
+<script src="${ctx}/resources/js/plugins/jstree/permission-tree.js" type="text/javascript"></script>
+<script src="${ctx}/resources/js/component.js" type="text/javascript"></script>
+<script type="text/javascript">
+    Component.init();
+	var permissions = [];
+
+	$("button[data-bb-handler='confirm']").bind('click', function(e) {
+		var tree = $("#permission_container").jstree(true);
+		var focusParentLi = $("a.jstree-clicked").parent("li").parent("ul").parent("li");
+		tree.refresh(focusLi);
+	});
+
+	jQuery(document).ready(function() {
+		UITree.init();
+		putPermissions();
+	});
+
+	function putPermissions() {
+		permissions.push('create');
+		permissions.push('update');
+		permissions.push('delete');
+
+	}
+</script>
+</body>
+</html>

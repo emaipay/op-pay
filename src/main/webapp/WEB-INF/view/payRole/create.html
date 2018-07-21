@@ -1,0 +1,39 @@
+[#include "/common/taglibs.html"/]
+<style>
+	.modal-dialog {
+		width: 580px;
+		left: -50px;
+		top: 10%;
+	}
+</style>
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+				&times;
+			</button>
+			<h4 class="modal-title" id="myModalLabel">
+				新增角色
+			</h4>
+		</div>
+		<form class="form-horizontal m-t" id="addRoleForm" action="${ctx}/back/payRole/create" method="post">
+			<div class="modal-body">
+				<div class=" control-group form-group">
+					<label class="control-label">角色名 <span class="required" aria-required="true">*</span></label>
+					<div class="controls">
+						<input id="roleName" name="roleName" class="form-control input-s-xlg" type="text" placeholder="请输入角色名">
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+				</button>
+				<button type="submit" class="btn btn-success">
+					保存
+				</button>
+			</div>
+		</form>
+	</div><!-- /.modal-content -->
+</div><!-- /.modal -->
+<script type="text/javascript">
+</script>

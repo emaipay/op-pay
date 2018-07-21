@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+[#include "/common/head.html"/]
+<head>
+    <meta charset="UTF-8">
+    <title>Center</title>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <!-- 模态框（Modal） -->
+    <form class="form-inline mb-20"  action="javasript:void(0);">
+            <div class="form-group mr-5">
+                <input type="text" class="form-control" name="search_LIKE_userName" placeholder="请输入用户账号" autofocus>
+                <input type="text" class="form-control" name="search_LIKE_nickName" placeholder="请输入昵称">
+                <input name="search_GTE_createdDate" class="form-control laydate-icon input-sm" readonly
+                       onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" placeholder="注册时间(起)">
+                -
+                <input name="search_GTE_createdDate" class="form-control laydate-icon input-sm" readonly
+                       onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" placeholder="注册时间(止)">
+
+                <select name="search_EQ_onlineStatus" class="form-control">
+                    <option value="">在线状态</option>
+                    [#list enums["com.hitler.entity.PayUser$OnlineStatus"]?values as item]
+                    	<option value="${item.name()}">${item.name()}</option>
+                    [/#list]
+                </select>
+                <select name="search_EQ_accountType" class="form-control">
+                    <option value="">账号类型</option>
+                    [#list enums["com.hitler.entity.PayUser$AccountType"]?values as item]
+                    	<option value="${item.name()}">${item.name()}</option>
+                    [/#list]
+                </select>
+                <select name="search_EQ_accountLocked" class="form-control">
+                    <option value="">账户状态</option>
+                    [#list enums["com.hitler.entity.PayUser$AccountStatus"]?values as item]
+                    	<option value="${item.name()}">${item.name()}</option>
+                    [/#list]
+                </select>
+                <select name="search_EQ_loginLocked" class="form-control">
+                    <option value="">登录锁定状态</option>
+                    <option value="false">已锁定</option>
+                    <option value="true">未锁定</option>
+                </select>
+                </div>
+               <button type="button" class="mr-5 btn btn-sm btn-primary" data-toggle="search"><i class="fa fa-search"></i> 搜索</button>
+                </button>
+                <button type="button" class="mr-5 btn btn-sm filter-cancel btn-warning"><i class="fa fa-times"></i> 重置
+                </button>
+            <div class="t-right" style="margin-top: -32px;">
+           	  [@shiro.hasPermission name="payUser/create"]
+                <a href="${ctx}/back/payUser/create" class="mr-5 btn btn-sm btn-primary" data-toggle="modal"
+                   data-target="#ajax-modal"> <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> 新增</a>
+              [/@shiro.hasPermission]
+            </div>
+    </form>
+    <div class="portlet box light-green" style="margin-top:50px;" >
+        <div class="portlet-body">
+            <div class="table-container">
+                <table border="0" cellpadding="0" cellspacing="0" class="table" data-toggle="table"
+                       id="admin_list_table">
+                    <thead>
+                    <tr>
+                        <th>操作</th>
+                        <th><input type="checkbox" id="checkBoxAll"></th>
+                        <th data-sortable="true">用户名</th>
+                        <th data-sortable="true">昵称</th>
+                       <!--  <th data-sortable="true">在线状态</th> -->
+                        <th>用户状态</th>
+                        <th>用户类型</th>
+                        <th>登录锁定状态</th>
+                        <th>注册时间</th>
+                        <th>最后登录时间</th>
+                        <th>最后登录地址</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+[#assign path="${ctx}/back/payUser"/]
+
+<script>
+
+    function assemblyHref(a) {
+        var selectedRows = [];
+        $(".fixed-table-column input[type='checkbox'][name='id[]']:checked").each(function () {
+            selectedRows.push($(this).val());
+        });
+        //console.log(selectedRows.length)
+
+        if (selectedRows.length == 0) {
+            layer.alert("请选择一条记录！");
+            //alert(a.attributes.onclick.value);
+            $(a).attr("href", "javascript:;");
+            if ($(a).attr("data-target") == "#ajax-modal")
+                $(a).removeAttr("data-toggle");
+            return;
+        } else {
+            if ($(a).attr("data-target") == "#ajax-modal")
+                $(a).attr("data-toggle", "modal");
+            $(a).attr("href", $(a).attr("data") + selectedRows);
+            selectedRows.length = 0;
+            return true;
+        }
+    }
+
+    var $table = $('#admin_list_table');
+
+    grid.init({
+        src: $table,
+        bootstrapTable: {
+            url: "${ctx}/back/payUser",
+            fixedColumns: true,
+            fixedNumber: 3,//固定列（有问题-找高手解决）
+            columns: [
+                {
+                    field: 'id',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var str = '<a href="javascript:;" class="dropdown-toggle label label-info" data-toggle="dropdown">' +
+                            '<i class="fa fa-cog"></i> 操作 <b class="caret"></b></a>' +
+                            '<ul class="dropdown-menu dropdown-menu-left dropdown-menu-tree">' +
+                            (($(".admin-username").val() == row.userName || $(".admin-username").val() == 'admin') ? '<li><a href="${path}/update/' + row.id + '" data-toggle="modal" data-target="#ajax-modal">修改密码</a></li>' : '') +
+                            '' +
+                            '<li class="dropdown-submenu">' +
+                            '<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown">状态更改</a>' +
+                            '  <ul class="dropdown-menu">' +
+                            '     [@shiro.hasPermission name="payUser/create"]<li><a href="${path}/update-status:' + (row.accountLocked == "正常" ? 2 : 0) + '/' + row.id + '" data-toggle="request">' + (row.accountLocked == '正常' ? '账户停用' : '账户启用') + '</a></li>[/@shiro.hasPermission]' +
+                            '     [@shiro.hasPermission name="payUser/create"]<li><a href="${path}/account-locked:' + (row.accountLocked == "锁定" ? 1 : 0) + '/' + row.id + '" data-toggle="request">' + (row.accountLocked == '锁定' ? '账户解锁' : '账户锁定') + '</a></li>[/@shiro.hasPermission]' +
+                            '     [@shiro.hasPermission name="payUser/create"]<li><a href="${path}/login-locked:' + !(row.loginLocked) + '/' + row.id + '" data-toggle="request">' + (row.loginLocked ? '登录解锁' : '登录锁定') + '</a></li>[/@shiro.hasPermission]' +
+                            '   </ul>' +
+                            '</li>' +
+                            '[@shiro.hasPermission name="payUser/distributionRole"]<li><a href="${ctx}/back/payUser/distributionRole/' + row.id + '" data-toggle="modal" data-target="#ajax-modal">角色分配</a></li>[/@shiro.hasPermission]' +
+                            '</ul>';
+                        return str;
+                    }
+                }, {
+                    field: 'id',
+                    align: 'center',
+                    formatter: checkBoxFormat,
+                    switchable: false,
+                },
+                {
+                    field: 'userName',
+                    align: 'center',
+                }, {
+                    field: 'nickName',
+                    align: 'center',
+                    sortable: true
+                }//,
+               // {
+               //    field: 'onlineStatus',
+                //    align: 'center',
+               //     formatter: function (value, row, index) {
+               //         return value == '在线' ? '<span class="label label-sm label-success">' + value + '</span>' : '<span class="label label-sm label-danger">' + value + '</span>';
+               //     }
+                //}
+                , {
+                    field: 'accountLocked',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        return value == '正常' ? '<span class="label label-sm label-success">' + value + '</span>' : '<span class="label label-sm label-danger">' + value + '</span>';
+                    }
+                },
+                {
+                    field: 'accountType',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                    	console.log(value);
+                        return value == '管理员' ? '<span class="label label-sm label-success">' + value + '</span>' : '<span class="label label-sm label-warning">' + value + '</span>';
+                    }
+                },
+                {
+                    field: 'loginLocked',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        return value == true ? '<span class="label label-sm label-danger">' + '已锁定' + '</span>' : '<span class="label label-sm label-success">' + '未锁定' + '</span>';
+                    }
+                }, {
+                    field: 'createdDate',
+                    align: 'center',
+                },
+                {
+                    field: 'lastLoginTime',
+                    align: 'center',
+                }, {
+                    field: 'lastLoginAddr',
+                    align: 'center',
+                }
+            ]
+        }
+    });
+</script>
+</body>
+
+</html>

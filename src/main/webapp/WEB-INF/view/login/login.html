@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+	<title>支付后台管理系统</title>
+	<meta name="keywords" content="支付后台,后台bootstrap框架,响应式后台">
+	<meta name="description" content="支付后台是一个完全响应式，基于Bootstrap3最新版本开发的扁平化主题，它采用了主流的左右两栏式布局，使用了Html5+CSS3等现代技术">
+	<link href="${ctx}/resources/css/bootstrap.min.css" rel="stylesheet">
+	<link href="${ctx}/resources/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+	<link href="${ctx}/resources/css/animate.min.css" rel="stylesheet">
+	<link href="${ctx}/resources/css/style.min.css" rel="stylesheet">
+	<link href="${ctx}/resources/css/login.min.css" rel="stylesheet">
+
+	<script type="text/javascript" src="${ctx}/resources/js/jquery.min.js?v=2.1.4"></script>
+	<script type="text/javascript" src="${ctx}/resources/js/plugins/validate/jquery.validate.min.js"></script>
+	<!--[if lt IE 8]>
+	<!-- <meta http-equiv="refresh" content="0;ie.html" /> -->
+	<![endif]-->
+	<script>
+		if(window.top!==window.self){window.top.location=window.location};
+	</script>
+
+</head>
+
+<body class="signin">
+<div class="signinpanel">
+	<div class="row">
+		<div class="col-sm-7">
+			<div class="signin-info">
+				<div class="logopanel m-b">
+				</div>
+				<div class="m-b"></div>
+				<h4>欢迎使用 <strong>支付后台管理</strong></h4>
+				<strong>忘记密码？ <a href="#">点击申请找回&raquo;</a></strong>
+			</div>
+		</div>
+		<div class="col-sm-5">
+			<form id="login-form" method="post"  action="">
+				<h4 class="no-margins">登录</h4>
+				<!--<p class="m-t-md">登录到H+后台主题UI框架</p>-->
+				<input type="text" id="username" name="userName" class="form-control uname" placeholder="用户名" />
+				<input type="password" name="password"   class="form-control pword m-b" placeholder="密码" />
+				<div>
+					<input type="text" id="v_code" name="vCode"  class="form-control vcode"   placeholder="验证码" />
+					<img id="codeimg" src="${ctx}/resources/vcode.jsp" style="height: 32px; vertical-align: top;"/>
+					<a href="javascript:reloadImage('${ctx}/resources/vcode.jsp')" class="login-next">换一张</a>
+					<!-- <a href="${ctx}/view/login/index.html">忘记密码了？</a> -->
+				</div>
+				<button type="button" class="btn btn-success btn-block" onclick="loginSubmit()">登录</button>
+				<div style="color:red;text-align: center;margin-top: 5px;" id="errorMsg"></div>
+			</form>
+		</div>
+	</div>
+	<div class="signup-footer">
+		<div class="pull-left">
+			&copy; 2017 All Rights Reserved.
+		</div>
+	</div>
+</div>
+<script>
+function loginSubmit(){
+	$("#errorMsg").text("");
+	if($('#login-form').valid()){
+		$.ajax({
+			url : '${ctx}/backLogin',
+			data : $('#login-form').serialize(),
+			type : "POST",
+			dataType:"JSON",
+			success : function(data) {
+				if(data.success){
+//				 	setTimeout(function(){
+						window.location.href="${ctx}/back/west";
+//				 	},1000);
+				}else{
+					$("#errorMsg").text(data.respMsg);
+					return;
+				}
+
+			}
+		});
+	}
+}
+
+$('#login-form').validate({
+	rules: {
+		userName: {
+			required: true
+		},
+		password: {
+			required: true
+		},
+		vCode:{
+			required: true
+		}
+
+	},
+	messages: {
+		userName: {
+			required: "用户名不能为空"
+		},
+		password: {
+			required: "密码不能为空",
+		},
+		vCode: {
+			required: "验证码不能为空",
+		}
+	}
+});
+
+document.onkeydown=function(e){
+	var keycode=document.all?event.keyCode:e.which;
+	if(keycode==13){
+		loginSubmit();
+	}
+}
+
+function reloadImage(imgurl){
+	document.getElementById("codeimg").src = imgurl + "?rm=" + Math.random();
+	$("#v_code").val("");
+}
+</script>
+</body>
+
+</html>

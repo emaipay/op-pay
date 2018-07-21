@@ -1,0 +1,223 @@
+[#include "/common/taglibs.html"/]
+<div class="modal-dialog modal-lg">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"
+				aria-hidden="true"></button>
+			<h4 class="modal-title">修改支付方式</h4>
+		</div>
+
+		<div class="modal-control">
+			[@form.form commandName="updateDTO" method="POST"
+			class="form-horizontal"] <input type="hidden" name="format"
+				value="json"> <input type="hidden" name="id" value="${id}">
+			<div class="modal-body">
+				<div class="form-body">
+					<div class="form-group">
+						<label class="col-md-3 control-label">支付平台</label>
+						<div class="col-md-9">
+							<div class="input-icon">
+								[@spring.bind path="platformId.id"] <select
+									id="${status.expression}" name="${status.expression}"
+									value="${status.value!}" class="bs-select form-control input-s">
+									[#list payPlatformList as item]
+									<option value="${item.id}"  [#if item.id==status.value]selected="selected"[/#if]>${item.name}</option> [/#list]
+								</select> [/@spring.bind]
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-3 control-label">商户名称</label>
+						<div class="col-md-9">
+							<div class="input-icon">
+								[@spring.bind path="merchantName"] <input
+									id="${status.expression}" value="${status.value!}"
+									name="${status.expression}" type="text" class="form-control"
+									placeholder="商户名称"> [/@spring.bind]
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-3 control-label">商户号</label>
+						<div class="col-md-9">
+							<div class="input-icon">
+								[@spring.bind path="merchantNo"] <input
+									id="${status.expression}" value="${status.value!}"
+									name="${status.expression}" type="text" class="form-control"
+									placeholder="商户号"> [/@spring.bind]
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-3 control-label">终端号</label>
+						<div class="col-md-9">
+							<div class="input-icon">
+								[@spring.bind path="terminalNo"] <input
+									id="${status.expression}" value="${status.value!}"
+									name="${status.expression}" type="text" class="form-control"
+									placeholder="终端号"> [/@spring.bind]
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-3 control-label">商户秘钥</label>
+						<div class="col-md-9">
+							<div class="input-icon">
+								[@spring.bind path="key"]
+
+								<textarea id="${status.expression}" name="${status.expression}"
+									cols="65" rows="5" class="radius-5">${status.value!}</textarea>
+
+								[/@spring.bind]
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-3 control-label">商户公钥</label>
+						<div class="col-md-9">
+							<div class="input-icon">
+								[@spring.bind path="publicKey"]
+								<textarea id="${status.expression}" name="${status.expression}"
+									cols="65" rows="5" class="radius-5">${status.value!}</textarea>
+								[/@spring.bind]
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-3 control-label">支付跳转类型</label>
+						<div class="col-md-9">
+							<div class="input-icon">
+								[@spring.bind path="pageType"] 
+								<select id="${status.expression}"  name="${status.expression}" class="bs-select form-control input-s">
+										 <option value="1" [#if 1==status.value]selected="selected"[/#if] >
+				                          	页面跳转
+				                        </option>
+								       <option value="0" [#if 0==status.value]selected="selected"[/#if] >
+				                          	返回json数据
+				                        </option>
+				                 </select> 
+								[/@spring.bind]
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-3 control-label">支付通道</label>
+						<div class="col-md-9">
+							<div class="input-icon">
+								[@spring.bind path="paycode"] <input
+									id="${status.expression}" name="${status.expression}"
+									value="${status.value!}" type="text" class="form-control"
+									placeholder="支付通道"> [/@spring.bind]
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-3 control-label">手续费比例</label>
+						<div class="col-md-9">
+							<div class="input-icon">
+								[@spring.bind path="feePercent"] <input
+									id="${status.expression}" name="${status.expression}"
+									value="${status.value!}" type="text" class="form-control"
+									placeholder="手续费比例"> [/@spring.bind]
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-3 control-label">卡上余额</label>
+						<div class="col-md-9">
+							<div class="input-icon">
+								[@spring.bind path="currentBalance"] <input
+									id="${status.expression}" name="${status.expression}"
+									value="${status.value!}" type="text" class="form-control"
+									placeholder="卡上余额"> [/@spring.bind]
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-3 control-label">预警金额</label>
+						<div class="col-md-9">
+							<div class="input-icon">
+								[@spring.bind path="warningAmount"] <input
+									id="${status.expression}" name="${status.expression}"
+									value="${status.value!}" type="text" class="form-control"
+									placeholder="预警金额"> [/@spring.bind]
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-3 control-label">二级域名</label>
+						<div class="col-md-9">
+							<div class="input-icon">
+								[@spring.bind path="domainName"] <input
+									id="${status.expression}" name="${status.expression}"
+									value="${status.value!}" type="text" class="form-control"
+									placeholder="二级域名"> [/@spring.bind]
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn blue btn-success">提交</button>
+			</div>
+			[/@form.form]
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$('#updateDTO').validate({
+		rules : {
+
+			merchantName : {
+				required : true
+			},
+			merchantNo : {
+				required : true
+			},
+			terminalNo : {
+				required : true
+			},
+			merchantKey : {
+				required : true
+			},
+			feePercent : {
+				required : true
+			},
+			currentBalance : {
+				required : true
+			},
+			warningAmount : {
+				required : true
+			}
+		},
+		messages : {
+			merchantName : {
+				required : "商户名称不能为空"
+			},
+			merchantNo : {
+				required : "商户号不能为空"
+			},
+			terminalNo : {
+				required : "终端号不能为空"
+			},
+			merchantKey : {
+				required : "商户秘钥不能为空"
+			},
+			feePercent : {
+				required : "手续费比例不能为空"
+			},
+			currentBalance : {
+				required : "当前余额不能为空"
+			},
+			warningAmount : {
+				required : "预警金额不能为空"
+			}
+		}
+	});
+
+	$(function() {
+	});
+</script>

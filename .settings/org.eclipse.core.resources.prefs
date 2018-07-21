@@ -1,0 +1,12 @@
+eclipse.preferences.version=1
+encoding//src/main/java=UTF-8
+encoding//src/main/resources=UTF-8
+encoding//src/main/webapp/WEB-INF/view/payBank/create.html=UTF-8
+encoding//src/main/webapp/WEB-INF/view/payBank/update.html=UTF-8
+encoding//src/main/webapp/WEB-INF/view/payMerchant/create.html=UTF-8
+encoding//src/main/webapp/WEB-INF/view/payMerchant/update.html=UTF-8
+encoding//src/main/webapp/WEB-INF/view/payPermission/create.html=UTF-8
+encoding//src/main/webapp/WEB-INF/view/payPermission/tree.html=UTF-8
+encoding//src/main/webapp/WEB-INF/view/payPermission/update.html=UTF-8
+encoding//src/test/java=UTF-8
+encoding/<project>=UTF-8

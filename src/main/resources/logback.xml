@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scanPeriod="60 seconds">
+
+	<property name="LOG_DIR" value="/home/op-pay-log" />
+
+	<!-- 控制台日志输出格式 -->
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+		</filter>
+		<encoder>
+			<Pattern>%date [%thread] [%-5p]%X{MDCString} [%c{1}] - %msg%n</Pattern>
+		</encoder>
+	</appender>
+
+	<!-- 输出 DAO 层日志文件配置 -->
+	<appender name="PAY_ROOT_LOG_FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<Encoding>UTF-8</Encoding>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${LOG_DIR}/logs/root-%d{yyyy-MM-dd}.log</FileNamePattern>
+			<MaxHistory>30</MaxHistory>
+		</rollingPolicy>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%date [%thread] [%-5p]%X{MDCString} [%c{1}] - %msg%n</pattern>
+		</layout>
+	</appender>
+	<appender name="PAY_LOG"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<Encoding>UTF-8</Encoding>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${LOG_DIR}/logs/pay-%d{yyyy-MM-dd}.log</FileNamePattern>
+			<MaxHistory>30</MaxHistory>
+		</rollingPolicy>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%date [%thread] [%-5p]%X{MDCString} [%c{1}] - %msg%n</pattern>
+		</layout>
+	</appender>
+	
+
+	<logger name="com.hitler" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="PAY_ROOT_LOG_FILE" />
+	</logger>
+	<logger name="com.hitler.core.log.PayLog" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="PAY_LOG" />
+	</logger>
+	
+</configuration>

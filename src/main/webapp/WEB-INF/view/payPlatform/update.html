@@ -1,0 +1,137 @@
+[#include "/common/taglibs.html"/]
+<div class="modal-dialog modal-lg">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"
+				aria-hidden="true"></button>
+			<h4 class="modal-title">修改支付类型名称</h4>
+		</div>
+
+		<div class="modal-control">
+			[@form.form commandName="updateDTO" method="POST"
+			class="form-horizontal"] <input type="hidden" name="format"
+				value="json"> <input type="hidden" name="rebatePoint"
+				value="7.8">
+			   <input type="hidden" name="id"
+				value="${id}">
+			 
+				 <div class="modal-body">
+				<div class="form-body">
+					<div class="form-group">
+						
+						
+						<div class="form-group">
+							<label class="col-md-3 control-label">平台名称</label>
+							<div class="col-md-9">
+								<div class="input-icon">
+									[@spring.bind path="name"] <input id="${status.expression}"
+										name="${status.expression}"  value="${status.value!}"  type="text" class="form-control"  
+										placeholder="请输入平台名称"> [/@spring.bind]
+								</div>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-md-3 control-label">支付类型简称</label>
+							<div class="col-md-9">
+								<div class="input-icon">
+									[@spring.bind path="platformCode"] <input id="${status.expression}"
+										name="${status.expression}"  value="${status.value!}"  type="text" class="form-control"  
+										placeholder="请输入支付类型简称"> [/@spring.bind]
+								</div>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-md-3 control-label">支付请求URL</label>
+							<div class="col-md-9">
+								<div class="input-icon">
+									[@spring.bind path="payUrl"] <input id="${status.expression}"
+										name="${status.expression}"  value="${status.value!}"  type="text" class="form-control"  
+										placeholder="请输入支付请求URL"> [/@spring.bind]
+								</div>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-md-3 control-label">第三方支付logo</label>
+							<div class="col-md-9">
+								<div class="input-icon">
+									[@spring.bind path="platformLogo"] <input id="${status.expression}"
+										name="${status.expression}"  value="${status.value!}"  type="text" class="form-control"  
+										placeholder="请输入第三方支付logo"> [/@spring.bind]
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+						<label class="col-md-3 control-label">支付类型</label>
+						<div class="col-md-9">
+							<div class="input-icon">
+							  [@spring.bind path="platformTypeId.id"] 
+							  <select id="${status.expression}"  name="${status.expression}" class="bs-select form-control input-s">
+                                
+				       [#list payPlatformTypeList as item]
+                        <option value="${item.id}"   [#if item.id==status.value]selected="selected"[/#if]>
+                          ${item.typeName}
+                        </option>
+                        [/#list]
+                            </select> [/@spring.bind] 
+							</div>
+						</div>
+					</div>
+	 
+	 
+					 
+						 
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn default" data-dismiss="modal">关闭</button>
+					<button type="submit" class="btn blue btn-success">提交</button>
+				</div>
+				[/@form.form]
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+ 
+
+	$('#createDTO').validate({
+		rules : { 
+			name : {
+				required : true
+			},
+			platformCode : {
+				required : true
+			},
+			payUrl : {
+				required : true
+			},
+			platformLogo : {
+				required : true
+			}
+			 
+		},
+		messages : {
+			name : {
+				required : "名称不能为空！",
+			},
+			platformCode : {
+				required : "简称不能为空！"
+			}
+			,
+			platformLogo : {
+				required : "logo不能为空！"
+			}
+			,
+			payUrl : {
+				required : "请求URL不能为空！"
+			}
+			 
+		}
+	});
+
+		$(function() {
+		});
+	</script>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>支付跳转中.......</title>
+<script type="text/javascript" src="${ctx}/resources/js/jquery.min.js?v=2.1.4"></script>
+<script type="text/javascript" src="${ctx}/resources/js/jquery.qrcode.min.js"></script>
+</head>
+<body>
+	<script type="text/javascript">
+		$(function(){
+			var error='${error}';
+			if(error!=null&&error!=''){
+				$("#message").html(error);
+				return;
+			}
+			
+			$("#dataForm").attr("action",$("#postUrl").val());
+				
+			$("#dataForm").submit();
+			
+			
+		});
+	</script>
+	<body>
+		<div id="message"></div>
+		<form action="#" method="post" id="dataForm" style="display: none;">
+			[#list paramMap?keys as key]
+			  <input type="text" id="${key}" name="${key}" value="${paramMap['${key}']}"/>
+			[/#list]
+		</form>
+	</body>
+</body>
+</html>
+

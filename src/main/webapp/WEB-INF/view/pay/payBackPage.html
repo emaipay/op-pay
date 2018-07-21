@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>支付结果确认页面</title>
+<script type="text/javascript" src="${ctx}/resources/js/jquery.min.js?v=2.1.4"></script>
+<script type="text/javascript" src="${ctx}/resources/js/jquery.qrcode.min.js"></script>
+</head>
+<body>
+	<script type="text/javascript">
+		$(function(){
+			var success="${success}";
+			if(success!='true'){
+				var message='${message}';
+				$("#message").html(message);
+				return;
+			}else{
+				$("#dataForm").submit();
+			}
+		});
+	</script>
+	<body>
+		<center><div id="message"></div></center>
+		<form action="${returnUrl}" method="post" id="dataForm" style="display: none;">
+			 <input type="text" id="billNo" name="billNo" value="${billNo}"/>
+			 <input type="text" id="orderNo" name="orderNo" value="${orderNo}"/>
+			 <input type="text" id="orderDate" name="orderDate" value="${orderDate}"/> 
+		</form>
+	</body>
+</body>
+</html>
+

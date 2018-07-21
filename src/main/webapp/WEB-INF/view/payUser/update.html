@@ -1,0 +1,89 @@
+[#include "/common/taglibs.html"/]
+<style>
+    .modal-dialog {
+        width: 580px;
+        left: -50px;
+        top: 10%;
+    }
+</style>
+<div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            <h4 class="modal-title">修改密码</h4>
+        </div>
+
+        <div class="modal-control">
+            [@form.form commandName="updateDTO" method="POST" class="form-horizontal"]
+             <input type="hidden" name="id" value="${id}">
+            <div class="modal-body">
+                <div class="form-body">
+                    <div class="control-group form-group">
+                        <label class="control-label">用户名</label>
+                        <div class="controls">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-user fa-fw"></i></div>
+                                [@spring.bind path="userName"]
+                                <input type="hidden" name="${status.expression}" value="${status.value!}">
+                                <input value="${status.value!}" readonly="readonly" type="text" class="form-control input-s-xlg"  placeholder="请输入登录密码">
+                                [/@spring.bind]
+                            </div>
+                        </div>
+                    </div>
+                <div class="control-group form-group">
+                    <label class="control-label">登录密码 <span class="required" aria-required="true">*</span></label>
+                    <div class="controls">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="fa fa-lock fa-fw"></i></div>
+                            [@spring.bind path="pwdLogin"]
+                            <input id="${status.expression}" id="pwdLogin" name="${status.expression}" type="password" class="form-control input-s-xlg">
+                            [/@spring.bind]</div>
+                    </div>
+                </div>
+                <div class="control-group form-group">
+                    <label class="control-label">确认登录密码 <span class="required" aria-required="true">*</span></label>
+                    <div class="controls">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="fa fa-lock fa-fw"></i></div>
+                            <input id="confirmloginPassword" name="confirmloginPassword" type="password" class="form-control input-s-xlg">
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn default" data-dismiss="modal">取消</button>
+                <button type="submit" class="btn btn-primary btn-success">保存</button>
+            </div>
+            [/@form.form]
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+$('#updateDTO').validate({
+	rules: {
+		pwdLogin: {
+			required: true
+		},
+		confirmloginPassword: {
+			required: true,
+			equalTo: '#pwdLogin'
+		}
+  	},
+	messages:{
+        pwdLogin: {
+			required: "登录密码不能为空！"
+		},
+		confirmloginPassword: {
+			required: "确认登录密码不能为空！",
+			equalTo: "必须与登录密码相同！"
+		}
+	}
+});
+
+$(function() {
+});
+
+</script>

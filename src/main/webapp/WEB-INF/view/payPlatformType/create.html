@@ -1,0 +1,94 @@
+[#include "/common/taglibs.html"/]
+
+<div class="modal-dialog modal-lg">
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"
+				aria-hidden="true"></button>
+			<h4 class="modal-title">新增支付类型</h4>
+		</div>
+
+		<div class="modal-control">
+			<div id="second-ajax-modal"
+				class="modal fade bs-modal bs-modal-large" tabindex="-1"></div>
+			[@form.form commandName="createDTO" method="POST"
+			class="form-horizontal"] <input type="hidden" name="format"
+				value="json">
+				<input type="hidden" name="createdBy" value="管理员">
+			<div class="modal-body">
+				<div class="form-body">
+					<div class="form-group">
+						<label class="col-md-3 control-label">支付类型名称</label>
+						<div class="col-md-9">
+							<div class="input-icon">
+								[@spring.bind path="typeName"] <input id="${status.expression}"
+									name="${status.expression}" type="text" class="form-control"
+									placeholder="请输入支付类型名称"> [/@spring.bind]
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-3 control-label">支付类型</label>
+						<div class="col-md-9">
+							<div class="input-icon">
+								[@spring.bind path="platformType"] <input
+									id="${status.expression}" name="${status.expression}"
+									ype="text" class="form-control" placeholder="请输入支付类型">
+								[/@spring.bind]
+							</div>
+						</div>
+					</div>
+				 </div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn blue btn-success"
+					>提交</button>
+			</div>
+			[/@form.form]
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$(".modal-body input:eq(0)").val("admintest1");
+	$(".modal-body input:eq(1)").val("admintest1");
+
+	function validateForm() {
+		$('#createDTO').submit();
+	}
+
+	$('#createDTO').validate({
+		rules : {
+			/*userName: {
+			    required: true,
+			    rangelength:[4,16],
+			    regex:"^\\w+$",//数字、26个英文字母或者下划线组成的字符串
+			    remote:{
+			        //验证用户名是否存在
+			        type:"POST",
+			        url:"user/ajaxCheckUserNameExists",
+			        data:{
+			            userName: function() {
+			                return $("#userName").val();
+			            }
+			        }
+			    }
+			},*/
+			typeName : {
+				required : true
+			},
+			platformType : {
+				required : true
+			}
+		},
+		messages : {
+			typeName : {
+				required : "名称不能为空！",
+			},
+			platformType : {
+				required : "类型不能为空！"
+			}
+		}
+	});
+</script>

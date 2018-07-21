@@ -1,0 +1,141 @@
+[#include "/common/taglibs.html"/]
+<style>
+    .modal-dialog {
+        width: 600px;
+        left: -45px;
+        top: 10%;
+    }
+</style>
+<div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            <h4 class="modal-title">新增管理员</h4>
+        </div>
+
+        <div class="modal-control">
+            <div id="second-ajax-modal" class="modal fade bs-modal bs-modal-large" tabindex="-1"></div>
+            [@form.form commandName="createDTO" method="POST" class="form-horizontal"]
+            <input type="hidden" name="format" value="json">
+            <div class="modal-body">
+                <div class="form-body">
+                    <div class="control-group form-group">
+                        <label class="control-label">用户名 <span class="required" aria-required="true">*</span></label>
+                        <div class="controls">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-user fa-fw"></i></div>
+                                [@spring.bind path="userName"]
+                                <input id="${status.expression}" name="${status.expression}"   type="text" class="form-control input-s-xlg" placeholder="用户名">
+                                [/@spring.bind]
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="control-group form-group">
+                        <label class="control-label">昵称 <span class="required" aria-required="true">*</span></label>
+                        <div class="controls">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-user fa-fw"></i></div>
+                                [@spring.bind path="nickName"]
+                                <input id="${status.expression}" name="${status.expression}" ype="text" class="form-control input-s-xlg" placeholder="请输入昵称">
+                                [/@spring.bind]
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="control-group form-group">
+                        <label class="control-label">账户类型</label>
+                        <div class="controls">
+                                [@spring.bind path="accountType"]
+			                        [#list enums["com.hitler.entity.PayUser$AccountType"]?values as item]
+			                        <label class="mr-5 btn btn-default">
+			                            <input name="${status.expression}" value="${item.name()}" type="radio" class="toggle">
+			                            ${item.name()}
+			                        </label>
+			                        [/#list]
+                       				 [/@spring.bind]
+                        </div>
+                    </div>
+                    <div class="control-group form-group">
+                        <label class="control-label">登录密码 <span class="required" aria-required="true">*</span></label>
+                        <div class="controls">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-lock fa-fw"></i></div>
+                                [@spring.bind path="pwdLogin"]
+                                <input id="${status.expression}" name="${status.expression}" type="text" class="form-control input-s-xlg" placeholder="登录密码"/>
+                                [/@spring.bind]
+                                <button id="genpassword" style="margin-left: -5px;" class="btn btn-success" type="button"><i class="fa fa-arrow-left fa-fw"/></i>生成密码</button>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="control-group form-group">
+                        <label class="control-label">确认密码 <span class="required" aria-required="true">*</span></label>
+                        <div class="controls">
+                            <div class="input-group">
+                                <div class="input-group-addon"><i class="fa fa-lock fa-fw"></i></div>
+                                <input id="newpassword" name="newpassword"  type="text" class="form-control input-s-xlg" placeholder="请输入确认密码"/>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn blue btn-success">保存</button>
+            </div>
+            [/@form.form]
+</div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $("#genpassword").click(function(){
+        $("#pwdLogin").val('a' + parseInt(Math.random() * (100000 - 999999 + 1) + 999999));
+    });
+
+    $('#createDTO').validate({
+        rules: {
+            nickName:{
+                required: true
+            },
+            pwdLogin: {
+                required: true
+            },
+            newpassword:{
+                required: true,
+                equalTo: "#pwdLogin"
+            }
+        },
+        messages:{
+            userName:{
+                required:"用户名不能为空！",
+                rangelength:$.validator.format("用户名位数必须是{0}到{1}字符之间！"),
+                regex:"用户名必须是由大小写字母、数字或下划线组成",
+                remote:"用户名已经存在"
+            },
+            nickName:{
+                required: "昵称不能为空！"
+            },
+            pwdLogin: {
+                required: "登录密码不能为空！"
+            },
+            newpassword:{
+                required: "登录密码不能为空！",
+                equalTo: "两次密码输入不一致！"
+            }
+        }
+    });
+
+    $(function() {
+        $.validator.addMethod("regex", //addMethod第1个参数:方法名称
+                function(value, element, params) { //addMethod第2个参数:验证方法，参数（被验证元素的值，被验证元素，参数）
+                    var exp = new RegExp(params); //实例化正则对象，参数为传入的正则表达式
+                    return exp.test(value);; //测试是否匹配
+                }, 	"格式错误"); //addMethod第3个参数:默认错误信息
+
+    });
+
+</script>

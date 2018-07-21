@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+[#include "/common/head.html"/]
+<head>
+    <meta charset="UTF-8">
+    <title>Center</title>
+</head>
+<body class="gray-bg">
+<style>
+    .formleft {
+        margin-left: 10px;
+    }
+</style>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <!-- 模态框（Modal） -->
+    <form class="form-inline mb-20">
+      		<div class="form-group mr-5">
+    
+                <input type="text" class="form-control" name="search_EQ_billNo" placeholder="单号">
+                <input type="text" class="form-control" name="search_EQ_transBillNo" placeholder="第三方支付单号">
+                <input type="text" class="form-control" name="search_EQ_connBillno" placeholder="接入方单号">
+                <select  id="${status.expression}"  name="search_EQ_platformId.id" class="bs-select form-control input-s">
+                	<option value="">选择充值平台类型</option>
+	                 [#list ppList  as item]
+	                 <option value="${item.id}">${item.name}</option>
+	                 [/#list]
+                 </select>
+                  <input name="search_GTE_createdDate" class="form-control laydate-icon input-sm" readonly onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" placeholder="创建时间(起)"  >
+               -
+                <input name="search_LTE_createdDate" class="form-control laydate-icon input-sm" readonly onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" placeholder="创建时间(止)"  >
+            </div>
+            <button type="button"  class="mr-5 btn btn-sm btn-primary"  data-toggle="search"  style="width:100px;margin-left:20px"><i class="fa fa-search"></i>搜索</button>
+            <button class="btn btn-sm filter-cancel formleft" style="width:100px;"><i class="fa fa-times"></i> 重置</button>
+           
+    </form>
+
+    <!-- ibox -->
+    <div class="portlet box light-green">
+        <div class="portlet-body">
+            <div class="table-container">
+                   <table border="0" cellpadding="0" cellspacing="0" class="table" data-toggle="table" id="order_list_table">
+                       <thead>
+                       <tr>
+                           <th>操作</th>
+                           <th>单号</th>
+                           <th data-sortable="true">第三方支付单号</th>
+                           <th data-sortable="true">接入方单号</th>
+                           <th>订单金额</th>
+                           <th>实际金额</th>
+                           <th>状态</th>
+                           <th>充值平台</th>
+                           <th>充值银行</th>
+                           <th>充值商户</th>
+                           <th>接入平台</th>
+                           <th>支付结果描述</th>
+                           <th>创建时间</th>
+                           <th>最后修改时间</th>
+                       </tr>
+                       </thead>
+                       <tbody>
+
+                       </tbody>
+                   </table>
+               </div>
+           </div>
+        </div>
+    </div>
+
+
+[#assign path="${ctx}/back/payOrder"/]
+
+<script>
+    var $table = $('#order_list_table');
+
+    grid.init({
+        src: $table,
+        bootstrapTable: {
+            url: "${ctx}/back/payOrder",
+            fixedColumns: true,
+            fixedNumber: 3,//固定列（有问题-找高手解决）
+            columns: [
+                {
+                    field: 'id',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                    	var str='-';
+                    	if(row.orderStatus!='支付成功'){
+                    		 var str = '[@shiro.hasPermission name="payOrder/reorder"]<button type="button" onclick=reorder('+row.id+') class="btn btn-sm btn-info">补单</button>[/@shiro.hasPermission]';
+                    		 return str;
+                    	}
+                       
+                    }
+                },{
+                    field: 'billNo',
+                    align: 'center'
+                },
+                {
+                    field: 'transBillNo',
+                    align: 'center'
+                },  {
+                    field: 'connBillno',
+                    align: 'center',
+                } ,
+                {
+                    field: 'orderAmount',
+                    align: 'center',
+                     
+                } ,
+                {
+                    field: 'factAmount',
+                    align: 'center',
+                     
+                } ,
+                {
+                    field: 'orderStatus',
+                    align: 'center'
+                    ,
+                    formatter: function (value, row, index) {
+                    	var str="";
+                    	console.log(value);
+                    if(value=='未付款'){
+                    	str="<span class='label label-sm label-warning'>未付款</span>";
+                    }else if(value=='支付成功'){
+                    	str="<span class='label label-sm label-success'>支付成功</span>";
+                    } else{
+                    	str="<span class='label label-sm label-danger'>支付失败</span>";
+                    }
+                
+                   return str;
+                    }
+                     
+                }, 
+                {
+                    field: 'platformId.name',
+                    align: 'center'
+                }, 
+                {
+                    field: 'payerBankId.name',
+                    align: 'center'
+                }, {
+                    field: 'merchantId.merchantName',
+                    align: 'center',
+                },{
+                    field: 'tenantId.platformName',
+                    align: 'center',
+                },
+                {
+                    field: 'orderStatusDesc',
+                    align: 'center',
+                },
+                {
+                    field: 'createdDate',
+                    align: 'center',
+                },
+                {
+                    field: 'lastModifiedDate',
+                    align: 'center',
+                }
+            ]
+        }
+    });
+    function reorder(orderid){
+    	 $.get("${ctx}/back/payOrder/reorder/"+orderid, function(result){
+			 	if(result.success==false){
+			 		layer.msg("补单失败:"+result.respMsg, {time: 3000});
+			 	}else{
+			 		layer.msg("补单成功！", {time: 3000});
+			 	}
+	     });
+    }
+</script>
+</body>
+
+</html>
