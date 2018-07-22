@@ -8,6 +8,7 @@ import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 
+import net.sf.json.JSONObject;
 import org.jdom.JDOMException;
 
 import com.alibaba.fastjson.JSON;
@@ -38,9 +39,11 @@ public class WxPayService implements IpayService {
 		Map<String, Object> respMap = new HashMap<String, Object>();
 		if(payCode.equals("APP")){
 			respMap.put("redirect", 0);
-			String params = appPayHandle(request, order, payCode);
-			respMap.put("postUrl", params);
-		}else{
+			respMap.put("postUrl", appPayHandle(request, order, payCode));
+		}else if(payCode.equals("MWEB")){//H5支付
+            respMap.put("redirect", 1);
+            respMap.put("postUrl", h5PayHandle(request, order, payCode));
+        }else{//公众号支付
 			ResultDTO<SortedMap<String, String>> dto = wapPayHandle(request, order, payCode);
 			respMap.put("redirect", 2);
 			respMap.put("postUrl", dto);
@@ -50,14 +53,14 @@ public class WxPayService implements IpayService {
 	
 	private String getPayResult(HttpServletRequest request, PayOrder order, String payCode, PayMerchant pm, String randomStr) throws Exception{
 		//String call = request.getScheme() + "://" + request.getServerName();
-		String call = "http://paytool.mzball.com";
+		String call = "https://r209.chaoshenwan.com";
 		String notifyUrl = call + "/pay/callback" + CALLBACK_DATA_PATH;
 		PayLog.getLogger().info("notifyUrl:" + notifyUrl);
 		SortedMap<String, String> parameters = new TreeMap<String, String>();
-		parameters.put("appid", pm.getTerminalNo());
-		parameters.put("mch_id", pm.getMerchantNo());
+		parameters.put("appid", pm.getTerminalNo());//公众账号ID appid
+		parameters.put("mch_id", pm.getMerchantNo());//商户号 mch_id
 		parameters.put("nonce_str", randomStr);
-		parameters.put("body", "魔智猎球商城充值");
+		parameters.put("body", "我要发商城充值");
 		parameters.put("out_trade_no", order.getTransBillNo()); // 订单id
 		// parameters.put("attach", "test");
 		parameters.put("total_fee", Math.round(order.getOrderAmount() * 100)+ "");
@@ -68,15 +71,51 @@ public class WxPayService implements IpayService {
 		if(payCode.equals("JSAPI")){//公众号支付
 			parameters.put("openid", order.getOpenid());
 		}
-		
-		// 设置签名
+		if(payCode.equals("MWEB")){//H5支付
+			JSONObject h5Info = new JSONObject();
+			h5Info.put("type", "Wap");
+			h5Info.put("wap_url", "http://m.woyao518.com");
+			h5Info.put("wap_name", "我要发商城充值");
+			JSONObject json = new JSONObject();
+			json.put("h5_info", h5Info);
+			parameters.put("scene_info", json.toString());
+		}
+
+	//	nonce_str 是 String(32) 5K8264ILTKCH16CQ2502SI8ZNMTM67VS 随机字符串，不长于32位。推荐随机数生成算法
+	//	签名 sign 是 String(32) C380BEC2BFD727A4B6845133519F3AD6 签名，详见签名生成算法
+	//	商品描述 body 是 String(128
+	//商户订单号 out_trade_no 是  商户系统内部的订单号,32个字符内、可包含字母, 其他说明见商户订单号
+   //总金额 total_fee 是 Int 888 订单总金额，单位为分，详见支付金额
+		//终端IP spbill_create_ip 是 String(16) 123.12.12.123 必须传正确的用户端IP,详见获取用户ip指引
+		//通知地址 notify_url 是 String(256) http://www.weixin.qq.com/wxpay/pay.php 接收微信支付异步通知回调地址，通知url必须为直接可访问的url，不能携带参数。
+		//交易类型 trade_type 是 String(16) MWEB H5支付的交易类型为MWEB
+//场景信息 scene_info 是 String(256)
+//IOS移动应用{"h5_info": {"type":"IOS","app_name": "王者荣耀","bundle_id": "com.tencent.wzryIOS"}}
+//安卓移动应用{"h5_info": {"type":"Android","app_name": "王者荣耀","package_name": "com.tencent.tmgp.sgame"}}
+//WAP网站应用{"h5_info": {"type":"Wap","wap_url": "http://m.woyao518.com","wap_name": "腾讯充值"}}
+/* <xml>
+<appid>wx2421b1c4370ec43b</appid>
+<attach>支付测试</attach>
+<body>H5支付测试</body>
+<mch_id>10000100</mch_id>
+<nonce_str>1add1a30ac87aa2db72f57a2375d8fec</nonce_str>
+<notify_url>http://wxpay.wxutil.com/pub_v2/pay/notify.v2.php</notify_url>
+<openid>oUpF8uMuAJO_M2pxb1Q9zNjWeS6o</openid>
+<out_trade_no>1415659990</out_trade_no>
+<spbill_create_ip>14.23.150.211</spbill_create_ip>
+<total_fee>1</total_fee>
+<trade_type>MWEB</trade_type>
+<scene_info>{"h5_info": {"type":"IOS","app_name": "王者荣耀","package_name": "com.tencent.tmgp.sgame"}}</scene_info>
+<sign>0CB01533B8C1EF103065174F50BCA001</sign>
+</xml>*/
+        // 设置签名
 		//String sign = PayCommonUtil.getSign(parameters, pm.getKey());
 		String sign = PayCommonUtil.generateSignature(parameters, pm.getKey());
 		parameters.put("sign", sign);
 		// 封装请求参数结束
 		String requestXML = PayCommonUtil.getRequestXml(parameters);
 		// 调用统一下单接口
-		PayLog.getLogger().info("微信支付"+payCode+"请求报文：" + requestXML);
+		PayLog.getLogger().info("微信支付"+payCode+"请求报文：" + requestXML);//https://api.mch.weixin.qq.com/pay/unifiedorder
 		String result = HttpUtil.Post("https://api.mch.weixin.qq.com/pay/unifiedorder", requestXML).getHtml();
 		PayLog.getLogger().info("微信支付"+payCode+"响应报文：" + result);
 		return result;
@@ -123,12 +162,51 @@ public class WxPayService implements IpayService {
 
 			return ResultDTO.success(parameterMap2, "成功");
 		} catch (Exception e) {
-			PayLog.getLogger().error("appPayHandle Exception:" + e.getMessage(), e);
+			PayLog.getLogger().error("wapPayHandle Exception:" + e.getMessage(), e);
 			return ResultDTO.error(Constants.PAY_FAIL, e.getMessage());
 		}
 	}
-	
-	@SuppressWarnings("unchecked")
+
+    private String h5PayHandle(HttpServletRequest request, PayOrder order, String payCode){
+        PayMerchant pm = order.getMerchantId();
+        String randomStr = PayCommonUtil.generateUUID();
+        /*公众账号ID appid 是 String(32) wx8888888888888888 调用接口提交的公众账号ID
+        商户号 mch_id 是 String(32) 1900000109 调用接口提交的商户号
+        设备号 device_info 否 String(32) 013467007045764 调用接口提交的终端设备号，
+        随机字符串 nonce_str 是 String(32) 5K8264ILTKCH16CQ2502SI8ZNMTM67VS 微信返回的随机字符串
+        签名 sign 是 String(32) C380BEC2BFD727A4B6845133519F3AD6 微信返回的签名，详见签名算法
+        业务结果 result_code 是 String(16) SUCCESS SUCCESS/FAIL
+        错误代码 err_code 否 String(32) SYSTEMERROR 详细参见错误列表
+        错误代码描述 err_code_des 否 String(128) 系统错误 错误返回的信息描述
+
+        以下字段在return_code 和result_code都为SUCCESS的时候有返回
+        字段名 变量名 必填 类型 示例值 描述
+        交易类型 trade_type 是 String(16) MWEB 调用接口提交的交易类型，取值如下：JSAPI，NATIVE，APP，,H5支付固定传MWEB
+        预支付交易会话标识 prepay_id 是 String(64) wx201410272009395522657a690389285100 微信生成的预支付回话标识，用于后续接口调用中使用，该值有效期为2小时,针对H5支付此参数无特殊用途
+        支付跳转链接 mweb_url 是 String(64) https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb?prepay_id=wx2016121516420242444321ca0631331346&package=1405458241  mweb_url为拉起微信支付收银台的中间页面，可通过访问该url来拉起微信客户端，完成支付,mweb_url的有效期为5分钟
+*/
+        try {
+            String result = getPayResult(request, order, payCode, pm, randomStr);
+            Map<String, String> map = XMLUtil.doXMLParse(result);
+            if(map.get("return_code").equals("FAIL")){
+                String returnMsg = map.get("return_msg");
+                PayLog.getLogger().error("return_code FAIL:"+ (StringUtils.isBlank(returnMsg)?"签名失败":returnMsg));
+                return null;
+            }
+            if(map.get("result_code").equals("FAIL")){
+                String err_code_des = map.get("err_code_des");
+                PayLog.getLogger().error("result_code FAIL:"+ err_code_des);
+                return null;
+            }
+            return map.get("mweb_url");//支付跳转链接
+        } catch (Exception e) {
+            PayLog.getLogger().error("wapPayHandle Exception:" + e.getMessage(), e);
+            return JSON.toJSONString(ResultDTO.error(Constants.PAY_FAIL, e.getMessage()));
+        }
+    }
+
+
+    @SuppressWarnings("unchecked")
 	private String appPayHandle(HttpServletRequest request, PayOrder order, String payCode){
 		PayMerchant pm = order.getMerchantId();
 		String randomStr = PayCommonUtil.generateUUID();

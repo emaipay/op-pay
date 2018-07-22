@@ -1,5 +1,6 @@
 package com.hitler.core.realm;
 
+import net.sf.json.JSONObject;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.shiro.crypto.hash.Md5Hash;
@@ -28,10 +29,13 @@ public class SaltUtil {
 	}
 
 	public static void main(String[] args) {
-		String salt = SaltUtil.getSalt("admin", "admin007");
-		System.out.println(salt);
-		String pwd = SaltUtil.encodeMd5Hash("admin007", salt);
-		System.out.println(pwd);
+		JSONObject h5Info = new JSONObject();
+		h5Info.put("type", "Wap");
+		h5Info.put("wap_url", "http://m.woyao518.com");
+		h5Info.put("wap_name", "我要发商城充值");
+		JSONObject json = new JSONObject();
+		json.put("h5_info", h5Info);
+		System.out.println(json.toString());
 	}
 	
 	
