@@ -22,14 +22,12 @@
 			
 		});
 	</script>
-	<body>
 		<div id="message"></div>
 		<form action="#" method="post" id="dataForm" style="display: none;">
 			[#list paramMap?keys as key]
 			  <input type="text" id="${key}" name="${key}" value="${paramMap['${key}']}"/>
 			[/#list]
 		</form>
-	</body>
 </body>
 </html>
 

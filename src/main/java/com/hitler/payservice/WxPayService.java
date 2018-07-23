@@ -61,7 +61,7 @@ public class WxPayService implements IpayService {
 		parameters.put("appid", pm.getTerminalNo());//公众账号ID appid
 		parameters.put("mch_id", pm.getMerchantNo());//商户号 mch_id
 		parameters.put("nonce_str", randomStr);
-		parameters.put("body", "我要发商城充值");
+		parameters.put("body", "商城充值");
 		parameters.put("out_trade_no", order.getTransBillNo()); // 订单id
 		// parameters.put("attach", "test");
 		parameters.put("total_fee", Math.round(order.getOrderAmount() * 100)+ "");
@@ -77,7 +77,7 @@ public class WxPayService implements IpayService {
 			JSONObject h5Info = new JSONObject();
 			h5Info.put("type", "Wap");
 			h5Info.put("wap_url", "http://m.woyao518.com");
-			h5Info.put("wap_name", "我要发商城充值");
+			h5Info.put("wap_name", "商城充值");
 			JSONObject json = new JSONObject();
 			json.put("h5_info", h5Info);
 			parameters.put("scene_info", json.toString());
@@ -200,10 +200,12 @@ public class WxPayService implements IpayService {
                 PayLog.getLogger().error("result_code FAIL:"+ err_code_des);
                 return null;
             }
-			String call = "http://pay.woyao518.com";
-			String retUrl = call + "/pay/callback" + CALLBACK_PAGE_PATH;
-			String urlString = URLEncoder.encode(retUrl, "UTF-8");
-			String mweb_url = map.get("mweb_url")+"&redirect_url="+urlString;
+			//String call = "http://pay.woyao518.com";
+			//String retUrl = call + "/pay/callback" + CALLBACK_PAGE_PATH;
+			//String retUrl = "http://m.woyao518.com";
+			//String urlString = URLEncoder.encode(retUrl, "UTF-8");
+			//String mweb_url = map.get("mweb_url")+"&redirect_url="+urlString;
+			String mweb_url = map.get("mweb_url");
             return mweb_url;//支付跳转链接
         } catch (Exception e) {
             PayLog.getLogger().error("wapPayHandle Exception:" + e.getMessage(), e);

@@ -97,7 +97,7 @@ public class PayOrderController extends GenericController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = "/order", method = RequestMethod.GET)
+	@RequestMapping(value = "/order", method = RequestMethod.POST)
 	@SuppressWarnings("unchecked")
 	public String payOrder(HttpServletRequest request, HttpServletResponse response, Model model) {
 		
@@ -227,10 +227,10 @@ public class PayOrderController extends GenericController {
 				
 				Integer redirect = (Integer) map.get("redirect");
 				if(redirect!=null && redirect==1){//直接跳转
-					response.setHeader("referer","http://m.woyao518.com");
-					response.sendRedirect(urlObj.toString());
-					//return "redirect:" + urlObj.toString();
-					return null;
+					//response.setHeader("referer","http://m.woyao518.com");
+					//response.sendRedirect(urlObj.toString());
+					model.addAttribute("returnUrl", urlObj.toString());
+					return "/pay/jumpPage";
 				}
 				if(redirect!=null && redirect==0){//网银或者支付宝支付//app支付
 					if(isPage==null || isPage.intValue()!=0){
@@ -339,14 +339,12 @@ public class PayOrderController extends GenericController {
 				model.addAttribute("error", JSON.toJSONString(ResultDTO.error(Constants.SIGN_ERROR, "秘钥验证不通过,请检查参数!")));
 				return false;
 			}
-			PayOrder po = payOrderService.queryOrderByConnBillno(billNo);
+			/*PayOrder po = payOrderService.queryOrderByConnBillno(billNo);
 			if (po != null) {
-				/*model.addAttribute("error",
-						JSON.toJSONString(ResultDTO.error(Constants.ORDER_NO_REPEAT, "订单号重复,请检查您的订单号生成方式!")));*/
 				model.addAttribute("error",
 						"订单号重复,请检查您的订单号生成方式!");
 				return false;
-			}
+			}*/
 		} catch (Exception e) {
 			PayLog.getLogger().error("[支付订单提交:{}]参数:{}", request.getParameter("billNo"),
 					JSON.toJSON(request.getParameterMap()), e);

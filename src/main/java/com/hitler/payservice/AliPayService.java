@@ -62,8 +62,8 @@ public class AliPayService implements IpayService {
 		PayLog.getLogger().info("notifyUrl:"+notifyUrl);
 		AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
 		AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
-		model.setBody("我要发商城");
-		model.setSubject("我要发商城充值");
+		model.setBody("商城");
+		model.setSubject("商城充值");
 		model.setOutTradeNo(order.getTransBillNo());
 		model.setTimeoutExpress("30m");
 		model.setTotalAmount(order.getOrderAmount()+ "");
@@ -144,13 +144,13 @@ public class AliPayService implements IpayService {
 		// 商户订单号，商户网站订单系统中唯一订单号，必填
 	    String out_trade_no = order.getTransBillNo();
 		// 订单名称，必填
-	    String subject = "我要发商城充值";
+	    String subject = "商城充值";
 		//System.out.println(subject);
 	    // 付款金额，必填
 	    String total_amount = order.getOrderAmount()+ "";
 	    // 商品描述，可空
 	    //String body = new String(request.getParameter("WIDbody").getBytes("ISO-8859-1"),"UTF-8");
-	    String body = "我要发商城";
+	    String body = "商城";
 	    // 超时时间 可空
 	   String timeout_express="30m";
 	    
