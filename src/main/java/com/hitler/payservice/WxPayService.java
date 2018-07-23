@@ -1,6 +1,7 @@
 package com.hitler.payservice;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
@@ -53,7 +54,7 @@ public class WxPayService implements IpayService {
 	
 	private String getPayResult(HttpServletRequest request, PayOrder order, String payCode, PayMerchant pm, String randomStr) throws Exception{
 		//String call = request.getScheme() + "://" + request.getServerName();
-		String call = "https://r209.chaoshenwan.com";
+		String call = "http://pay.woyao518.com";
 		String notifyUrl = call + "/pay/callback" + CALLBACK_DATA_PATH;
 		PayLog.getLogger().info("notifyUrl:" + notifyUrl);
 		SortedMap<String, String> parameters = new TreeMap<String, String>();
@@ -64,7 +65,8 @@ public class WxPayService implements IpayService {
 		parameters.put("out_trade_no", order.getTransBillNo()); // 订单id
 		// parameters.put("attach", "test");
 		parameters.put("total_fee", Math.round(order.getOrderAmount() * 100)+ "");
-		String ip = com.hitler.util.RequestUtils.getIpAddr(request);
+		String ip = com.hitler.util.RequestUtils.getIpAddress(request);
+		PayLog.getLogger().info("ip："+ip);
 		parameters.put("spbill_create_ip", ip);
 		parameters.put("notify_url", notifyUrl);
 		parameters.put("trade_type", payCode);
@@ -198,7 +200,11 @@ public class WxPayService implements IpayService {
                 PayLog.getLogger().error("result_code FAIL:"+ err_code_des);
                 return null;
             }
-            return map.get("mweb_url");//支付跳转链接
+			String call = "http://pay.woyao518.com";
+			String retUrl = call + "/pay/callback" + CALLBACK_PAGE_PATH;
+			String urlString = URLEncoder.encode(retUrl, "UTF-8");
+			String mweb_url = map.get("mweb_url")+"&redirect_url="+urlString;
+            return mweb_url;//支付跳转链接
         } catch (Exception e) {
             PayLog.getLogger().error("wapPayHandle Exception:" + e.getMessage(), e);
             return JSON.toJSONString(ResultDTO.error(Constants.PAY_FAIL, e.getMessage()));

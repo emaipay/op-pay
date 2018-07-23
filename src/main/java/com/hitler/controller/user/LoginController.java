@@ -48,13 +48,13 @@ public class LoginController extends GenericController {
 	@RequestMapping(value = "/backLogin")
 	@ResponseBody
 	public ResultDTO<?> backLogin(HttpServletRequest req,@Valid UserLoginDTO ul,BindingResult br){
-		String vcode = (String) req.getSession().getAttribute(Constants.VCODE_PARAM);
+		/*String vcode = (String) req.getSession().getAttribute(Constants.VCODE_PARAM);
 		if (null==vcode) {
 			return ResultDTO.error(Constants.EXCEPTION,"验证码已失效");
 		} 
 		if (!vcode.equalsIgnoreCase(ul.getvCode())) {
 			return ResultDTO.error(Constants.EXCEPTION,"验证码错误");
-		}
+		}*/
 		AdminInfoDTO adminInfoDTO=null;
 		if(br.hasErrors()){
 			return ResultDTO.error(Constants.FORM_ERROR,ValidUtil.bindMsgOne(br));

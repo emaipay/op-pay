@@ -57,7 +57,7 @@ public class AliPayService implements IpayService {
 		PayMerchant pm = order.getMerchantId();
 		PayPlatform pp = order.getPlatformId();
 		//String call = httpRequest.getScheme() + "://" + httpRequest.getServerName();
-		String call = "https://r209.chaoshenwan.com";
+		String call = "http://pay.woyao518.com";
 		String notifyUrl = call + "/pay/callback" + CALLBACK_DATA_PATH;
 		PayLog.getLogger().info("notifyUrl:"+notifyUrl);
 		AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
@@ -134,7 +134,7 @@ public class AliPayService implements IpayService {
 	
 	private String wapPay(HttpServletRequest request, PayOrder order, String payCode){
 		//String call = request.getScheme() + "://" + request.getServerName();
-		String call = "https://r209.chaoshenwan.com";
+		String call = "http://pay.woyao518.com";
 		String notifyUrl = call + "/pay/callback" + CALLBACK_DATA_PATH;
 		PayLog.getLogger().info("notifyUrl:"+notifyUrl);
 		String retUrl = call + "/pay/callback" + CALLBACK_PAGE_PATH;

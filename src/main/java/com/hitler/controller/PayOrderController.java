@@ -227,7 +227,10 @@ public class PayOrderController extends GenericController {
 				
 				Integer redirect = (Integer) map.get("redirect");
 				if(redirect!=null && redirect==1){//直接跳转
-					return "redirect:" + urlObj.toString();
+					response.setHeader("referer","http://m.woyao518.com");
+					response.sendRedirect(urlObj.toString());
+					//return "redirect:" + urlObj.toString();
+					return null;
 				}
 				if(redirect!=null && redirect==0){//网银或者支付宝支付//app支付
 					if(isPage==null || isPage.intValue()!=0){
