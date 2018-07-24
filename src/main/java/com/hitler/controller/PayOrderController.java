@@ -97,7 +97,7 @@ public class PayOrderController extends GenericController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = "/order", method = RequestMethod.POST)
+	@RequestMapping(value = "/order", method = RequestMethod.GET)
 	@SuppressWarnings("unchecked")
 	public String payOrder(HttpServletRequest request, HttpServletResponse response, Model model) {
 		
@@ -227,10 +227,22 @@ public class PayOrderController extends GenericController {
 				
 				Integer redirect = (Integer) map.get("redirect");
 				if(redirect!=null && redirect==1){//直接跳转
-					//response.setHeader("referer","http://m.woyao518.com");
-					//response.sendRedirect(urlObj.toString());
-					model.addAttribute("returnUrl", urlObj.toString());
-					return "/pay/jumpPage";
+					//model.addAttribute("returnUrl", urlObj.toString());
+					//return "/pay/jumpPage";
+					response.setContentType("text/html;charset=UTF-8");
+					StringBuffer stringBuffer = new StringBuffer();
+					stringBuffer.append("<!DOCTYPE html>");
+					stringBuffer.append("<html lang=\"en\"><head>");
+					stringBuffer.append("  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />");
+					stringBuffer.append("<title>支付跳转中.......</title></head>");
+					stringBuffer.append("<body>");
+					stringBuffer.append("<script type=\"text/javascript\">");
+					stringBuffer.append("window.location.href = '");
+					stringBuffer.append(urlObj.toString());
+					stringBuffer.append("';").append("</script></body></html>");
+					PrintWriter out = response.getWriter();
+					out.println(stringBuffer.toString());
+					return null;
 				}
 				if(redirect!=null && redirect==0){//网银或者支付宝支付//app支付
 					if(isPage==null || isPage.intValue()!=0){
