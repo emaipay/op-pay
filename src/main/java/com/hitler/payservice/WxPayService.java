@@ -9,6 +9,7 @@ import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.hitler.util.*;
 import net.sf.json.JSONObject;
 import org.jdom.JDOMException;
 
@@ -23,11 +24,6 @@ import com.hitler.entity.PayMerchant;
 import com.hitler.entity.PayOrder;
 import com.hitler.payservice.support.IpayService;
 import com.hitler.payservice.support.PayOrderQueryData;
-import com.hitler.util.HttpReqUtil;
-import com.hitler.util.HttpUtil;
-import com.hitler.util.JUUIDUtil;
-import com.hitler.util.PayCommonUtil;
-import com.hitler.util.XMLUtil;
 
 public class WxPayService implements IpayService {
 	
@@ -200,8 +196,8 @@ public class WxPayService implements IpayService {
                 PayLog.getLogger().error("result_code FAIL:"+ err_code_des);
                 return null;
             }
-			//String call = "http://pay.woyao518.com";
-			String retUrl = order.getReturnUrl();
+			String call = "http://pay.woyao518.com";
+			String retUrl = call + "/pay/callback" + CALLBACK_PAGE_PATH+"?out_trade_no="+order.getTransBillNo();
 			//String retUrl = "http://m.woyao518.com";
 			String urlString = URLEncoder.encode(retUrl, "UTF-8");
 			String mweb_url = map.get("mweb_url")+"&redirect_url="+urlString;
@@ -269,6 +265,9 @@ public class WxPayService implements IpayService {
 		try {
 			String notifyXml = HttpReqUtil.inputStreamToStrFromByte(request.getInputStream());
 			PayLog.getLogger().info("getPayOrderNo微信支付系统发送的数据"+notifyXml);
+			if(StringUtils.isBlank(notifyXml)){
+				return request.getParameter("out_trade_no");
+			}
 			Map<String, String> paraMap = XMLUtil.doXMLParse(notifyXml);
 			String out_trade_no = paraMap.get("out_trade_no");
 			request.setAttribute("paraMap", paraMap);
