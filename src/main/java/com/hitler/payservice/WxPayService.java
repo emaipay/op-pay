@@ -200,8 +200,8 @@ public class WxPayService implements IpayService {
                 PayLog.getLogger().error("result_code FAIL:"+ err_code_des);
                 return null;
             }
-			String call = "http://pay.woyao518.com";
-			String retUrl = call + "/pay/callback" + CALLBACK_PAGE_PATH;
+			//String call = "http://pay.woyao518.com";
+			String retUrl = order.getReturnUrl();
 			//String retUrl = "http://m.woyao518.com";
 			String urlString = URLEncoder.encode(retUrl, "UTF-8");
 			String mweb_url = map.get("mweb_url")+"&redirect_url="+urlString;
