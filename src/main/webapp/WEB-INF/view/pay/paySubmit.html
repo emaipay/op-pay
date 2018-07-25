@@ -12,6 +12,9 @@
 			var error='${error}';
 			if(error!=null&&error!=''){
 				$("#message").html(error);
+        if (window.navigator.userAgent.indexOf('LotteryApp') >= 0) {
+          window.location.href = "http://pay-success";
+        }
 				return;
 			}
 			//var qrCode='${qrCode}';
@@ -38,8 +41,9 @@
 			}
 			
 		});
+
+
 	</script>
-	<body>
 		<div id="message"></div>
 		<center><div id="code" style="display:none;"></div> </center>
 		<form action="#" method="post" id="dataForm" style="display: none;">

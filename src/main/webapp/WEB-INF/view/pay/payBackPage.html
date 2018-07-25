@@ -13,6 +13,9 @@
 			if(success!='true'){
 				var message='${message}';
 				$("#message").html(message);
+        if (window.navigator.userAgent.indexOf('LotteryApp') >= 0) {
+          window.location.href = "http://pay-success";
+        }
 				return;
 			}else{
 				$("#dataForm").submit();
