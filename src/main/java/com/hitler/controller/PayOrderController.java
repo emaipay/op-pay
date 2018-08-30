@@ -97,7 +97,7 @@ public class PayOrderController extends GenericController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = "/order", method = RequestMethod.GET)
+	@RequestMapping(value = "/order", method = RequestMethod.POST)
 	@SuppressWarnings("unchecked")
 	public String payOrder(HttpServletRequest request, HttpServletResponse response, Model model) {
 		

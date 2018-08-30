@@ -13,8 +13,12 @@
 			if(success!='true'){
 				var message='${message}';
 				$("#message").html(message);
-        if (window.navigator.userAgent.indexOf('LotteryApp') >= 0) {
-          window.location.href = "pay-success://";
+        var ua = navigator.userAgent
+        var app = ua.indexOf('LotteryApp') > -1
+        var android = ua.indexOf('Android') > -1
+        var ios = ua.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/) //ios终端
+        if (app || android || ios) {
+          window.location.href = 'pay-success://'
         }
 				return;
 			}else{

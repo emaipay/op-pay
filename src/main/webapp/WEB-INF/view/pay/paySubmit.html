@@ -1,60 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>支付跳转中.......</title>
-<script type="text/javascript" src="${ctx}/resources/js/jquery.min.js?v=2.1.4"></script>
-<script type="text/javascript" src="${ctx}/resources/js/jquery.qrcode.min.js"></script>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>支付跳转中.......</title>
+  <script type="text/javascript" src="${ctx}/resources/js/jquery.min.js?v=2.1.4"></script>
+  <script type="text/javascript" src="${ctx}/resources/js/jquery.qrcode.min.js"></script>
 </head>
 <body>
-	<script type="text/javascript">
-		$(function(){
-			var error='${error}';
-			if(error!=null&&error!=''){
-				$("#message").html(error);
-        if (window.navigator.userAgent.indexOf('LotteryApp') >= 0) {
-          window.location.href = "pay-success://";
-        }
-				return;
-			}
-			//var qrCode='${qrCode}';
-			//alert(qrCode);
-			//如果是生成二维码形式
-			if($("#qrCode").val()!=undefined&&($("#qrCode").val()==true || $("#qrCode").val()=='true') ){
-				var retUrl=$("#postUrl").val();
-				$("#code").qrcode({
-	                text: retUrl,
-	                width:250,
-	                height:250
-	            });
-				$("#code").show();
-				return;
-			}else{
-				if($("#domainName").val()!=undefined&&$("#domainName").val()!=null&&$("#domainName").val()!=''){
-					//假如是绑定域名的,则需要先跳转到绑定的域名里面进行表单提交
-					var domainName=$("#domainName").val();
-					$("#dataForm").attr("action",domainName+"/pay/jump");
-				}else{
-					$("#dataForm").attr("action",$("#postUrl").val());
-				}
-				$("#dataForm").submit();
-			}
-			
-		});
+<script type="text/javascript">
+  $(function () {
+    var error = '${error}'
+    if (error != null && error != '') {
+      $('#message').html(error)
+      var ua = navigator.userAgent
+      var app = ua.indexOf('LotteryApp') > -1
+      var android = ua.indexOf('Android') > -1
+      var ios = ua.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/) //ios终端
+      if (app || android || ios) {
+        window.location.href = 'pay-success://'
+      }
+      return
+    }
+    //var qrCode='${qrCode}';
+    //alert(qrCode);
+    //如果是生成二维码形式
+    if ($('#qrCode').val() != undefined && ($('#qrCode').val() == true || $('#qrCode').val() == 'true')) {
+      var retUrl = $('#postUrl').val()
+      $('#code').qrcode({
+        text: retUrl,
+        width: 250,
+        height: 250
+      })
+      $('#code').show()
+      return
+    } else {
+      if ($('#domainName').val() != undefined && $('#domainName').val() != null && $('#domainName').val() != '') {
+        //假如是绑定域名的,则需要先跳转到绑定的域名里面进行表单提交
+        var domainName = $('#domainName').val()
+        $('#dataForm').attr('action', domainName + '/pay/jump')
+      } else {
+        $('#dataForm').attr('action', $('#postUrl').val())
+      }
+      $('#dataForm').submit()
+    }
+
+  })
 
 
-	</script>
-		<div id="message"></div>
-		<center><div id="code" style="display:none;"></div> </center>
-		<form action="#" method="post" id="dataForm" style="display: none;">
-		<#if map??>
-			<#list map?keys as key>
-				<input type="text" id="${key}" name="${key}" value="${map[key]}"/>
-			</#list>
-		</#if>
-		
-		</form>
-	</body>
+</script>
+<div id="message"></div>
+<center>
+  <div id="code" style="display:none;"></div>
+</center>
+<form action="#" method="post" id="dataForm" style="display: none;">
+  <#if map??>
+  <#list map?keys as key>
+  <input type="text" id="${key}" name="${key}" value="${map[key]}"/>
+</
+#list>
+</
+#if>
+
+</form>
+</body>
 </body>
 </html>
 
