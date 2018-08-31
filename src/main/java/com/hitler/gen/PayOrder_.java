@@ -13,6 +13,7 @@ public enum PayOrder_ {
 	fee,	// '手续费'
 	orderStatusDesc,	// '支付结果描述'
 	orderStatus,	// '订单状态'
+	payUrl,	// '第三方支付url'
 	platformId,
 	userName,	// '回调地址'
 	userId,	// '充值用户id'

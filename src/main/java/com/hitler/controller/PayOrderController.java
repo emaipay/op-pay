@@ -179,22 +179,7 @@ public class PayOrderController extends GenericController {
         po.setReqReserved(reqReserved);
         po.setTerminalType(payMerchant.getTerminalType());
         po.setOpenid(openid);
-        /*try {
-            payOrderService.save(po);
-        } catch (Exception e) {
-            e.printStackTrace();
-            PayLog.getLogger().error("[支付订单提交:{}]充值订单保存失败,参数:{}", request.getParameter("billNo"),
-                    JSON.toJSON(request.getParameterMap()), e);
-            model.addAttribute("error",
-                    JSON.toJSONString(ResultDTO.error(Constants.ORDER_SAVE_ERROR, "充值订单保存失败,请联系相关人员!")));
-            po.setOrderStatus(OrderStatus.支付失败);
-            try {
-                payOrderService.update(po);
-            } catch (Exception e1) {
-                PayLog.getLogger().error("[支付订单提交:{}]充值订单update失败,参数:{}", e);
-            }
-            return "/pay/paySubmit";
-        }*/
+
         try {
             // 获取付款银行
             PayPlatformBank ppb = platformService.queryPayPlatformBankCode(payBank.getId(), payPlatform.getId());
@@ -215,14 +200,14 @@ public class PayOrderController extends GenericController {
                 return "/pay/paySubmit";
             }
 
-            if(urlObj instanceof String){
+            if (urlObj instanceof String) {
                 po.setPayUrl(urlObj.toString());
             }
             try {
                 payOrderService.save(po);
-            }catch (Exception ignore){
+            } catch (Exception ignore) {
                 po = payOrderService.queryOrderByConnBillno(billNo);
-                if(StringUtils.isNotBlank(po.getPayUrl())){
+                if (po != null && StringUtils.isNotBlank(po.getPayUrl())) {
                     urlObj = po.getPayUrl();
                 }
             }
@@ -235,14 +220,14 @@ public class PayOrderController extends GenericController {
             }
 
             Integer redirect = (Integer) map.get("redirect");
-            if(redirect==null){
+            if (redirect == null) {
                 model.addAttribute("map", map);
                 return "/pay/paySubmit";
             }
 
-            switch (redirect){
+            switch (redirect) {
                 case 0://网银或者支付宝支付//app支付
-                   // payOrderService.save(po);
+                    // payOrderService.save(po);
                     //网银或者支付宝支付，非app支付
                     if (isPage == null || isPage.intValue() != 0) {
                         //System.out.println("111111111111111111111111111");
@@ -277,18 +262,18 @@ public class PayOrderController extends GenericController {
                             model.addAttribute(key, parameterMap.get(key));
                         }
                         model.addAttribute("returnUrl", returnUrl);
-                       // payOrderService.save(po);
+                        // payOrderService.save(po);
                         return "/pay/wxPay";
                     } else {
                         model.addAttribute("error", JSON.toJSONString(dto));
                         po.setOrderStatus(OrderStatus.支付失败);
                         po.setOrderStatusDesc(dto.getRespMsg());
-                       // payOrderService.save(po);
+                        // payOrderService.save(po);
                     }
                     break;
                 case 3: //扫码支付
                     model.addAttribute("returnUrl", urlObj.toString());
-                   // payOrderService.save(po);
+                    // payOrderService.save(po);
                     return "/pay/scan";
             }
 
@@ -317,7 +302,7 @@ public class PayOrderController extends GenericController {
         return "/pay/paySubmit";
     }
 
-    private void handlePay(){
+    private void handlePay() {
 
     }
 
