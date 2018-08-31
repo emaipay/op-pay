@@ -183,17 +183,7 @@ public class PayOrderController extends GenericController {
         try {
             payOrderService.save(po);
         } catch (Exception ignore) {
-            PayOrder order = payOrderService.queryOrderByConnBillno(billNo);
-            if (order != null) {
-                order.setFee(po.getFee());
-                order.setOrderAmount(po.getOrderAmount());
-                order.setBillNo(biilno);
-                order.setTransBillNo(biilno.substring(4));
-                try {
-                    payOrderService.update(po);
-                }catch (Exception ignore1) {
-                }
-            }
+            po = payOrderService.queryOrderByConnBillno(billNo);
         }
 
         try {
