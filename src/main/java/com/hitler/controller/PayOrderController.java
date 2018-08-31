@@ -181,6 +181,22 @@ public class PayOrderController extends GenericController {
         po.setOpenid(openid);
 
         try {
+            payOrderService.save(po);
+        } catch (Exception ignore) {
+            PayOrder order = payOrderService.queryOrderByConnBillno(billNo);
+            if (order != null) {
+                order.setFee(po.getFee());
+                order.setOrderAmount(po.getOrderAmount());
+                order.setBillNo(biilno);
+                order.setTransBillNo(biilno.substring(4));
+                try {
+                    payOrderService.update(po);
+                }catch (Exception ignore1) {
+                }
+            }
+        }
+
+        try {
             // 获取付款银行
             PayPlatformBank ppb = platformService.queryPayPlatformBankCode(payBank.getId(), payPlatform.getId());
             PayConfig pc = payConfigService.queryConfigByType(payPlatform.getPlatformTypeId().getPlatformType(),
@@ -196,20 +212,8 @@ public class PayOrderController extends GenericController {
                 model.addAttribute("error",
                         JSON.toJSONString(ResultDTO.error(Constants.PARAM_EMPTY, "数据组装错误,postUrl为空!")));
                 po.setOrderStatus(OrderStatus.支付失败);
-                payOrderService.save(po);
+                payOrderService.update(po);
                 return "/pay/paySubmit";
-            }
-
-            if (urlObj instanceof String) {
-                po.setPayUrl(urlObj.toString());
-            }
-            try {
-                payOrderService.save(po);
-            } catch (Exception ignore) {
-                po = payOrderService.queryOrderByConnBillno(billNo);
-                if (po != null && StringUtils.isNotBlank(po.getPayUrl())) {
-                    urlObj = po.getPayUrl();
-                }
             }
 
 
@@ -268,7 +272,7 @@ public class PayOrderController extends GenericController {
                         model.addAttribute("error", JSON.toJSONString(dto));
                         po.setOrderStatus(OrderStatus.支付失败);
                         po.setOrderStatusDesc(dto.getRespMsg());
-                        // payOrderService.save(po);
+                         payOrderService.update(po);
                     }
                     break;
                 case 3: //扫码支付
@@ -284,7 +288,7 @@ public class PayOrderController extends GenericController {
                     JSON.toJSONString(ResultDTO.error(Constants.REFLECT_ERROR, "充值订单保存失败,请联系相关人员!")));
             po.setOrderStatus(OrderStatus.支付失败);
             try {
-                payOrderService.save(po);
+                payOrderService.update(po);
             } catch (Exception e1) {
                 PayLog.getLogger().error("[支付订单提交:{}]反射充值订单update失败,参数:{}", e);
             }

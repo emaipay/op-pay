@@ -159,12 +159,6 @@ public class PayOrder extends CheckableEntity<Integer> {
 	@Column(name = "transaction_id", columnDefinition = "varchar(128) COMMENT '接入方返回的订单号'", nullable = true)
 	private String transactionId;
 
-	/**
-	 * 第三方支付单号
-	 */
-	@Checked
-	@Column(name = "pay_url", columnDefinition = "varchar(200) COMMENT '第三方支付url'", nullable = true)
-	private String payUrl;
 
 	
 	public PayOrder() {
@@ -403,11 +397,4 @@ public class PayOrder extends CheckableEntity<Integer> {
 		this.transactionId = transactionId;
 	}
 
-	public void setPayUrl(String payUrl) {
-		this.payUrl = payUrl;
-	}
-
-	public String getPayUrl() {
-		return payUrl;
-	}
 }
