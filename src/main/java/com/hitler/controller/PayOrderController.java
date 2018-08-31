@@ -17,6 +17,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.hitler.util.StringUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ReflectionUtils;
@@ -214,6 +215,19 @@ public class PayOrderController extends GenericController {
                 return "/pay/paySubmit";
             }
 
+            if(urlObj instanceof String){
+                po.setPayUrl(urlObj.toString());
+            }
+            try {
+                payOrderService.save(po);
+            }catch (Exception ignore){
+                po = payOrderService.queryOrderByConnBillno(billNo);
+                if(StringUtils.isNotBlank(po.getPayUrl())){
+                    urlObj = po.getPayUrl();
+                }
+            }
+
+
             String orderId = (String) map.get("orderId");
             if (StringUtils.isNotBlank(orderId)) {//第三方支付ID
                 po.setTransactionId(orderId);
@@ -223,13 +237,12 @@ public class PayOrderController extends GenericController {
             Integer redirect = (Integer) map.get("redirect");
             if(redirect==null){
                 model.addAttribute("map", map);
-                payOrderService.save(po);
                 return "/pay/paySubmit";
             }
 
             switch (redirect){
                 case 0://网银或者支付宝支付//app支付
-                    payOrderService.save(po);
+                   // payOrderService.save(po);
                     //网银或者支付宝支付，非app支付
                     if (isPage == null || isPage.intValue() != 0) {
                         //System.out.println("111111111111111111111111111");
@@ -240,7 +253,7 @@ public class PayOrderController extends GenericController {
                     out.println(urlObj.toString());
                     return null;
                 case 1://直接跳转
-                    payOrderService.save(po);
+                    //payOrderService.save(po);
                     response.setContentType("text/html;charset=UTF-8");
                     StringBuffer stringBuffer = new StringBuffer();
                     stringBuffer.append("<!DOCTYPE html>");
@@ -264,18 +277,18 @@ public class PayOrderController extends GenericController {
                             model.addAttribute(key, parameterMap.get(key));
                         }
                         model.addAttribute("returnUrl", returnUrl);
-                        payOrderService.save(po);
+                       // payOrderService.save(po);
                         return "/pay/wxPay";
                     } else {
                         model.addAttribute("error", JSON.toJSONString(dto));
                         po.setOrderStatus(OrderStatus.支付失败);
                         po.setOrderStatusDesc(dto.getRespMsg());
-                        payOrderService.save(po);
+                       // payOrderService.save(po);
                     }
                     break;
                 case 3: //扫码支付
                     model.addAttribute("returnUrl", urlObj.toString());
-                    payOrderService.save(po);
+                   // payOrderService.save(po);
                     return "/pay/scan";
             }
 
