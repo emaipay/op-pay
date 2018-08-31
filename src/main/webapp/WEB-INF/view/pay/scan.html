@@ -3,22 +3,20 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <title>扫码支付</title>
-  <script type="text/javascript" src="${ctx}/resources/js/jquery.min.js?v=2.1.4"></script>
-  <script type="text/javascript" src="${ctx}/resources/js/jquery.qrcode.min.js?v=2.1.4"></script>
-  <script type="text/javascript">
-    //$('#code').qrcode("${returnUrl}");
-    $("#code").qrcode({
-      render: "table", //table方式
-      width: 200, //宽度
-      height:200, //高度
-      text: "${returnUrl}" //内容
-    });
-  </script>
+ <!-- <script type="text/javascript" src="${ctx}/resources/js/jquery.min.js?v=2.1.4"></script>-->
+  <script type="text/javascript" src="${ctx}/resources/js/jquery.qrcode.min.js"></script>
 </head>
 <body>
-<!--<script type="text/javascript">
-    window.location.href = '${returnUrl}';
-</script>-->
+<script type="text/javascript">
+  var code = new QRCode(document.getElementById("code"), {
+    text: "${returnUrl}",
+    width: 200,
+    height: 200,
+    colorDark : "#000000",
+    colorLight : "#ffffff",
+    correctLevel : QRCode.CorrectLevel.H
+  });
+</script>
 <div id="code"></div>
 </body>
 </html>
