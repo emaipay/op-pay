@@ -12,13 +12,16 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayTradeAppPayModel;
+import com.alipay.api.domain.AlipayTradePrecreateModel;
 import com.alipay.api.domain.AlipayTradeQueryModel;
 import com.alipay.api.domain.AlipayTradeWapPayModel;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
+import com.alipay.api.request.AlipayTradePrecreateRequest;
 import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
+import com.alipay.api.response.AlipayTradePrecreateResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.hitler.core.Constants;
 import com.hitler.core.dto.ResultDTO;
@@ -31,6 +34,8 @@ import com.hitler.entity.PayOrder;
 import com.hitler.entity.PayPlatform;
 import com.hitler.payservice.support.IpayService;
 import com.hitler.payservice.support.PayOrderQueryData;
+
+import static com.hitler.payservice.YfbPayService.CHARSET;
 
 public class AliPayService implements IpayService {
 	
@@ -45,9 +50,13 @@ public class AliPayService implements IpayService {
 		if(payCode.equals("QUICK_WAP_PAY")){//AliPayApi wapPay
 			respMap.put("postUrl", wapPay(request, order, payCode));
 			return respMap;
-		}else{//AliPayApi appPay
+		}else if(payCode.equals("QUICK_MSECURITY_PAY")){//AliPayApi appPay
 			String params = appPay(request, order, payCode);
 			respMap.put("postUrl", params);
+			return respMap;
+		}else{
+			respMap.put("redirect", 3);
+			respMap.put("postUrl", scanPay(request, order));
 			return respMap;
 		}
 		
@@ -73,7 +82,7 @@ public class AliPayService implements IpayService {
 		request.setNotifyUrl(notifyUrl);
 		try {
 			AlipayClient alipayClient = new DefaultAlipayClient(pp.getPayUrl(),
-					pm.getMerchantNo(),  pm.getKey(), "json","UTF-8", pm.getPublicKey(), "RSA2");
+					pm.getMerchantNo(),  pm.getKey(), "json",CHARSET, pm.getPublicKey(), "RSA2");
 			// 这里和普通的接口调用不同，使用的是sdkExecute
 			AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
 			Map<String, Object> respMap = new HashMap<String, Object>();
@@ -87,6 +96,59 @@ public class AliPayService implements IpayService {
 			//return e.getMessage();
 			return JSON.toJSONString(ResultDTO.error(Constants.PAY_FAIL, e.getMessage()));
 		}
+	}
+
+	/**
+	 * 扫码支付
+	 * @param httpRequest
+	 * @param order
+	 * @param payCode
+	 * @return
+	 */
+	private String scanPay(HttpServletRequest httpRequest, PayOrder order){
+		String call = "http://pay.woyao518.com";
+		String notifyUrl = call + "/pay/callback" + CALLBACK_DATA_PATH;
+		PayLog.getLogger().info("notifyUrl:"+notifyUrl);
+		String retUrl = call + "/pay/callback" + CALLBACK_PAGE_PATH;
+		PayLog.getLogger().info("retUrl:"+retUrl);
+		PayMerchant pm = order.getMerchantId();
+		PayPlatform pp = order.getPlatformId();
+		AlipayClient alipayClient = new DefaultAlipayClient(pp.getPayUrl(),
+				pm.getMerchantNo(), pm.getKey(), "json", CHARSET, pm.getPublicKey(), "RSA2"); //获得初始化的AlipayClient
+		AlipayTradePrecreateRequest request = new AlipayTradePrecreateRequest();//创建API对应的request类
+		AlipayTradePrecreateModel model = new AlipayTradePrecreateModel();
+		model.setBody("商城");
+		model.setSubject("商城充值");//订单标题
+		model.setOutTradeNo(order.getTransBillNo());//商户订单号，需要保证不重复
+		model.setTimeoutExpress("30m");//交易超时时间
+		model.setTotalAmount(order.getOrderAmount()+ "");//订单金额
+		model.setStoreId(pm.getMerchantNo());//商户门店编号
+		/*request.setBizContent("{" +
+				"    \"out_trade_no\":\"20150320010101002\"," +
+				"    \"total_amount\":\"88.88\"," +
+				"    \"subject\":\"Iphone6 16G\"," +
+				"    \"store_id\":\"NJ_001\"," +
+				"    \"timeout_express\":\"90m\"}");*///设置业务参数
+
+		request.setBizModel(model);
+		// 设置异步通知地址
+		request.setNotifyUrl(notifyUrl);
+		// 设置同步地址
+		request.setReturnUrl(retUrl);
+		try {
+
+			AlipayTradePrecreateResponse response = alipayClient.execute(request);
+			PayLog.getLogger().info("AliPayApi scanPay body:"+response.getBody());
+
+			//根据response中的结果继续业务逻辑处理
+			String qrCode = response.getQrCode();
+			PayLog.getLogger().info("AliPayApi scanPay qrCode:"+qrCode);
+			return qrCode;
+		} catch (AlipayApiException e) {
+			PayLog.getLogger().error("AliPayApi wapPay AlipayApiException:"+e.getMessage(), e);
+		}
+
+		return null;
 	}
 	
 	public static void main(String[] args) throws AlipayApiException {
@@ -131,6 +193,8 @@ public class AliPayService implements IpayService {
 		boolean verify_result = AlipaySignature.rsaCheckV1(params, publicKey, "UTF-8", "RSA2");
 		System.out.println(verify_result);
 	}
+
+
 	
 	private String wapPay(HttpServletRequest request, PayOrder order, String payCode){
 		//String call = request.getScheme() + "://" + request.getServerName();
