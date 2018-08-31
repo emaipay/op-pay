@@ -178,7 +178,7 @@ public class PayOrderController extends GenericController {
         po.setReqReserved(reqReserved);
         po.setTerminalType(payMerchant.getTerminalType());
         po.setOpenid(openid);
-        try {
+        /*try {
             payOrderService.save(po);
         } catch (Exception e) {
             e.printStackTrace();
@@ -193,7 +193,7 @@ public class PayOrderController extends GenericController {
                 PayLog.getLogger().error("[支付订单提交:{}]充值订单update失败,参数:{}", e);
             }
             return "/pay/paySubmit";
-        }
+        }*/
         try {
             // 获取付款银行
             PayPlatformBank ppb = platformService.queryPayPlatformBankCode(payBank.getId(), payPlatform.getId());
@@ -210,76 +210,73 @@ public class PayOrderController extends GenericController {
                 model.addAttribute("error",
                         JSON.toJSONString(ResultDTO.error(Constants.PARAM_EMPTY, "数据组装错误,postUrl为空!")));
                 po.setOrderStatus(OrderStatus.支付失败);
-                try {
-                    payOrderService.update(po);
-                } catch (Exception e1) {
-                    PayLog.getLogger().error("[支付订单提交:{}]充值订单update失败,postUrl为空");
-                }
-            } else {
-
-                String orderId = (String) map.get("orderId");
-                if (StringUtils.isNotBlank(orderId)) {//第三方支付ID
-                    po.setTransactionId(orderId);
-                    payOrderService.update(po);
-                    map.remove("orderId");
-                }
-
-                Integer redirect = (Integer) map.get("redirect");
-
-                switch (redirect){
-                    case 0://网银或者支付宝支付//app支付
-                        //网银或者支付宝支付，非app支付
-                        if (isPage == null || isPage.intValue() != 0) {
-                            //System.out.println("111111111111111111111111111");
-                            response.setContentType("text/html;charset=UTF-8");
-                        }
-
-                        PrintWriter out = response.getWriter();
-                        out.println(urlObj.toString());
-                        return null;
-                    case 1://直接跳转
-                        response.setContentType("text/html;charset=UTF-8");
-                        StringBuffer stringBuffer = new StringBuffer();
-                        stringBuffer.append("<!DOCTYPE html>");
-                        stringBuffer.append("<html lang=\"en\"><head>");
-                        stringBuffer.append("  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />");
-                        stringBuffer.append("<title>支付跳转中.......</title></head>");
-                        stringBuffer.append("<body>");
-                        stringBuffer.append("<script type=\"text/javascript\">");
-                        stringBuffer.append("window.location.href = '");
-                        stringBuffer.append(urlObj.toString());
-                        stringBuffer.append("';").append("</script></body></html>");
-                        out = response.getWriter();
-                        out.println(stringBuffer.toString());
-                        return null;
-                    case 2://微信公众号
-                        ResultDTO<SortedMap<String, String>> dto = (ResultDTO<SortedMap<String, String>>) urlObj;
-                        if (dto.getSuccess()) {
-                            SortedMap<String, String> parameterMap = dto.getResult();
-                            for (String key : parameterMap.keySet()) {
-                                model.addAttribute(key, parameterMap.get(key));
-                            }
-                            model.addAttribute("returnUrl", returnUrl);
-                            return "/pay/wxPay";
-                        } else {
-                            model.addAttribute("error", JSON.toJSONString(dto));
-                            po.setOrderStatus(OrderStatus.支付失败);
-                            po.setOrderStatusDesc(dto.getRespMsg());
-                            try {
-                                payOrderService.update(po);
-                            } catch (Exception e1) {
-                                PayLog.getLogger().error("[支付订单提交:{}]充值订单update失败,postUrl为空");
-                            }
-                        }
-                        break;
-                    case 3: //扫码支付
-                        model.addAttribute("returnUrl", urlObj.toString());
-                        return "/pay/scan";
-                }
-
-
+                payOrderService.save(po);
+                return "/pay/paySubmit";
             }
-            model.addAttribute("map", map);
+
+            String orderId = (String) map.get("orderId");
+            if (StringUtils.isNotBlank(orderId)) {//第三方支付ID
+                po.setTransactionId(orderId);
+                map.remove("orderId");
+            }
+
+            Integer redirect = (Integer) map.get("redirect");
+            if(redirect==null){
+                model.addAttribute("map", map);
+                payOrderService.save(po);
+                return "/pay/paySubmit";
+            }
+
+            switch (redirect){
+                case 0://网银或者支付宝支付//app支付
+                    //网银或者支付宝支付，非app支付
+                    if (isPage == null || isPage.intValue() != 0) {
+                        //System.out.println("111111111111111111111111111");
+                        response.setContentType("text/html;charset=UTF-8");
+                    }
+
+                    PrintWriter out = response.getWriter();
+                    out.println(urlObj.toString());
+                    payOrderService.save(po);
+                    return null;
+                case 1://直接跳转
+                    response.setContentType("text/html;charset=UTF-8");
+                    StringBuffer stringBuffer = new StringBuffer();
+                    stringBuffer.append("<!DOCTYPE html>");
+                    stringBuffer.append("<html lang=\"en\"><head>");
+                    stringBuffer.append("  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />");
+                    stringBuffer.append("<title>支付跳转中.......</title></head>");
+                    stringBuffer.append("<body>");
+                    stringBuffer.append("<script type=\"text/javascript\">");
+                    stringBuffer.append("window.location.href = '");
+                    stringBuffer.append(urlObj.toString());
+                    stringBuffer.append("';").append("</script></body></html>");
+                    out = response.getWriter();
+                    out.println(stringBuffer.toString());
+                    return null;
+                case 2://微信公众号
+                    ResultDTO<SortedMap<String, String>> dto = (ResultDTO<SortedMap<String, String>>) urlObj;
+                    if (dto.getSuccess()) {
+                        SortedMap<String, String> parameterMap = dto.getResult();
+                        for (String key : parameterMap.keySet()) {
+                            model.addAttribute(key, parameterMap.get(key));
+                        }
+                        model.addAttribute("returnUrl", returnUrl);
+                        payOrderService.save(po);
+                        return "/pay/wxPay";
+                    } else {
+                        model.addAttribute("error", JSON.toJSONString(dto));
+                        po.setOrderStatus(OrderStatus.支付失败);
+                        po.setOrderStatusDesc(dto.getRespMsg());
+                        payOrderService.save(po);
+                    }
+                    break;
+                case 3: //扫码支付
+                    model.addAttribute("returnUrl", urlObj.toString());
+                    payOrderService.save(po);
+                    return "/pay/scan";
+            }
+
         } catch (Exception e) {
             PayLog.getLogger().error("[支付订单提交:{}]反射订单处理失败,参数:{}", request.getParameter("billNo"),
                     JSON.toJSON(request.getParameterMap()), e);
@@ -287,7 +284,7 @@ public class PayOrderController extends GenericController {
                     JSON.toJSONString(ResultDTO.error(Constants.REFLECT_ERROR, "充值订单保存失败,请联系相关人员!")));
             po.setOrderStatus(OrderStatus.支付失败);
             try {
-                payOrderService.update(po);
+                payOrderService.save(po);
             } catch (Exception e1) {
                 PayLog.getLogger().error("[支付订单提交:{}]反射充值订单update失败,参数:{}", e);
             }
@@ -301,6 +298,7 @@ public class PayOrderController extends GenericController {
                 return null;
             }
         }
+
         return "/pay/paySubmit";
     }
 
