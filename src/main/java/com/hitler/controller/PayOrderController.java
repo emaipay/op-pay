@@ -229,6 +229,7 @@ public class PayOrderController extends GenericController {
 
             switch (redirect){
                 case 0://网银或者支付宝支付//app支付
+                    payOrderService.save(po);
                     //网银或者支付宝支付，非app支付
                     if (isPage == null || isPage.intValue() != 0) {
                         //System.out.println("111111111111111111111111111");
@@ -237,9 +238,9 @@ public class PayOrderController extends GenericController {
 
                     PrintWriter out = response.getWriter();
                     out.println(urlObj.toString());
-                    payOrderService.save(po);
                     return null;
                 case 1://直接跳转
+                    payOrderService.save(po);
                     response.setContentType("text/html;charset=UTF-8");
                     StringBuffer stringBuffer = new StringBuffer();
                     stringBuffer.append("<!DOCTYPE html>");
@@ -253,6 +254,7 @@ public class PayOrderController extends GenericController {
                     stringBuffer.append("';").append("</script></body></html>");
                     out = response.getWriter();
                     out.println(stringBuffer.toString());
+
                     return null;
                 case 2://微信公众号
                     ResultDTO<SortedMap<String, String>> dto = (ResultDTO<SortedMap<String, String>>) urlObj;
