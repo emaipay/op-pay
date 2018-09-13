@@ -71,13 +71,18 @@
   })
 
   function checkOrderStatus () {
-    $.get('${ctx}/pay/order/status?orderCode=${orderCode}', function (result) {
-      if (result.success == true && result.respMsg != '0') {
-        if (isFromMobile()) {
+    $.ajax({
+      type: "GET",
+      url: "${ctx}/pay/order/status?orderCode=${orderCode}",
+      dataType: "json",
+      success: function(data){
+        if (data.success == true && data.respMsg != '0') {
+          if (isFromMobile()) {
             window.location.href = 'pay-success://'
+          }
+        } else {
+          alert(data.respMsg)
         }
-      } else {
-          alert(result.respMsg)
       }
     })
   }
