@@ -55,7 +55,8 @@ public class AliPayService implements IpayService {
 			respMap.put("postUrl", params);
 			return respMap;
 		}else{
-			respMap.put("redirect", 3);
+			respMap.put("redirect", 3);//扫码支付
+			respMap.put("target", 2);//表示支付宝扫码支付
 			respMap.put("postUrl", scanPay(request, order));
 			return respMap;
 		}

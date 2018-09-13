@@ -3,20 +3,13 @@ package com.hitler.controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.hitler.core.utils.*;
 import com.hitler.util.StringUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,11 +26,6 @@ import com.hitler.core.dto.pay.BankDto;
 import com.hitler.core.dto.pay.PayMerchantDto;
 import com.hitler.core.dto.pay.PayQueryOrderDto;
 import com.hitler.core.log.PayLog;
-import com.hitler.core.utils.BillNoUtils;
-import com.hitler.core.utils.CollectionHelper;
-import com.hitler.core.utils.DesEncryptUtils;
-import com.hitler.core.utils.HttpUtils;
-import com.hitler.core.utils.StringUtils;
 import com.hitler.entity.PayBank;
 import com.hitler.entity.PayConfig;
 import com.hitler.entity.PayConfig.MethodType;
@@ -179,6 +167,7 @@ public class PayOrderController extends GenericController {
         po.setReqReserved(reqReserved);
         po.setTerminalType(payMerchant.getTerminalType());
         po.setOpenid(openid);
+        po.setCreatedDate(new Date());
 
         try {
             payOrderService.save(po);
@@ -267,6 +256,11 @@ public class PayOrderController extends GenericController {
                     break;
                 case 3: //扫码支付
                     model.addAttribute("returnUrl", urlObj.toString());
+                    Integer target = (Integer) map.get("target");
+                    model.addAttribute("target", target);
+                    model.addAttribute("amount", po.getOrderAmount());
+                    model.addAttribute("billNo", billNo);
+                    model.addAttribute("orderTime", DateUtil.dateToStr(po.getCreatedDate()));
                     // payOrderService.save(po);
                     return "/pay/scan";
             }

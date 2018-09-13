@@ -1,14 +1,10 @@
 package com.hitler.entity;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.hibernate.annotations.Type;
 
@@ -158,7 +154,6 @@ public class PayOrder extends CheckableEntity<Integer> {
 	@Checked
 	@Column(name = "transaction_id", columnDefinition = "varchar(128) COMMENT '接入方返回的订单号'", nullable = true)
 	private String transactionId;
-
 
 	
 	public PayOrder() {

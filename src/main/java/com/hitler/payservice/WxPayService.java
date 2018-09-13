@@ -50,6 +50,7 @@ public class WxPayService implements IpayService {
                 break;
             case "NATIVE":
                 respMap.put("redirect", 3);
+                respMap.put("target", 1);//表示微信扫码支付
                 respMap.put("postUrl", scanPayHandle(request, order, payCode));
                 break;
         }
