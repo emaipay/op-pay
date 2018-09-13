@@ -259,7 +259,7 @@ public class PayOrderController extends GenericController {
                     Integer target = (Integer) map.get("target");
                     model.addAttribute("target", target);
                     model.addAttribute("amount", po.getOrderAmount());
-                    model.addAttribute("billNo", billNo);
+                    model.addAttribute("orderCode", po.getTransBillNo());
                     model.addAttribute("orderTime", DateUtil.dateToStr(po.getCreatedDate()));
                     long leftTime = (DateUtil.addMinute(po.getCreatedDate(), 60 * 2).getTime() - System.currentTimeMillis()) / 1000;
                     leftTime = leftTime > 0 ? leftTime : 0;
@@ -370,13 +370,13 @@ public class PayOrderController extends GenericController {
     @ResponseBody
     @RequestMapping(value = "/order/status", method = RequestMethod.GET)
     public ResultDTO<?> queryStatus(HttpServletRequest request, Model model) {
-        String billno = request.getParameter("billNo");
-        if(StringUtils.isBlank(billno)){
+        String orderCode = request.getParameter("orderCode");
+        if(StringUtils.isBlank(orderCode)){
             return ResultDTO.error(Constants.NO_ORDER, "未查询到该订单!");
         }
-        PayOrder po = payOrderService.queryOrderByConnBillno(billno);
+        PayOrder po = payOrderService.queryOrderByTransBillno(orderCode);
         if (po == null) {
-            PayLog.getLogger().error("[支付订单提交:{}]未查询到该订单.", billno);
+            PayLog.getLogger().error("[支付订单提交:{}]未查询到该订单.", orderCode);
             return ResultDTO.error(Constants.NO_ORDER, "未查询到该订单!");
         }
 

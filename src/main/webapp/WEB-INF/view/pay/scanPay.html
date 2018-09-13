@@ -21,7 +21,7 @@
 
   </div>
   <div>下单时间：${orderTime}</div>
-  <div class="order-amount">下单金额：<span>${amount}元</span>${leftTime}</div>
+  <div class="order-amount">下单金额：<span>${amount}元</span></div>
   <div class="qr-code" id="code"></div>
   <a class="screenshot" id="screenshot" href="invoke://screencapture">点击保存截屏</a>
   <#if target?? && target == 1>
@@ -71,7 +71,7 @@
   })
 
   function checkOrderStatus () {
-    $.get('${ctx}/pay/order/status?billNo=${billNo}', function (result) {
+    $.get('${ctx}/pay/order/status?orderCode=${orderCode}', function (result) {
       if (result.success == true && result.respMsg != '0') {
         if (isFromMobile()) {
             window.location.href = 'pay-success://'
