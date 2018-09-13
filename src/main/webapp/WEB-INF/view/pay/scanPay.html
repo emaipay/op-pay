@@ -22,7 +22,7 @@
 
   </div>
   <div>下单时间：${orderTime}</div>
-  <div class="order-amount">下单金额：<span>${amount}元</span></div>
+  <div class="order-amount">下单金额：<span>${amount}元</span>${leftTime}</div>
   <div class="qr-code" id="code"></div>
   <a class="screenshot" id="screenshot" href="invoke://screencapture">点击保存截屏</a>
   <#if target?? && target == 1>
@@ -43,23 +43,23 @@
   if (!isApp()) {
     document.getElementById('screenshot').style.display = 'none'
   }
-  var maxtime = ${leftTime} //一个小时，按秒计算，自己调整!
-    function CountDown () {
-      if (maxtime >= 0) {
-        hours = Math.floor(maxtime / 3600)
-        minutes = Math.floor(maxtime / 60 % 60)
-        seconds = Math.floor(maxtime % 60)
-        msg = '距离截止支付时间还有：<span>' + hours + '</span>小时<span>' + minutes + '</span>分<span>' + seconds + '</span>秒'
-        document.all['timer'].innerHTML = msg
-        --maxtime
-      } else {
-        clearInterval(timer)
-        alert('充值二维码已失效，请返回重新充值')
-        if (isFromMobile()) {
-          window.location.href = 'pay-success://'
-        }
+  var maxtime = 2 * 60 * 60//一个小时，按秒计算，自己调整!
+  function CountDown () {
+    if (maxtime >= 0) {
+      hours = Math.floor(maxtime / 3600)
+      minutes = Math.floor(maxtime / 60 % 60)
+      seconds = Math.floor(maxtime % 60)
+      msg = '距离截止支付时间还有：<span>' + hours + '</span>小时<span>' + minutes + '</span>分<span>' + seconds + '</span>秒'
+      document.all['timer'].innerHTML = msg
+      --maxtime
+    } else {
+      clearInterval(timer)
+      alert('充值二维码已失效，请返回重新充值')
+      if (isFromMobile()) {
+        window.location.href = 'pay-success://'
       }
     }
+  }
 
   timer = setInterval(CountDown, 1000)
 
@@ -72,7 +72,7 @@
     correctLevel: QRCode.CorrectLevel.H
   })
 
-  function checkOrderStatus () {
+  /*function checkOrderStatus () {
     $.get('${ctx}/pay/order/status?billNo=${billNo}', function (result) {
       if (result.success == true && result.respMsg != '0') {
         if (isFromMobile()) {
@@ -84,7 +84,7 @@
     })
   }
 
-  setTimeout('checkOrderStatus()', 5000);    //5秒后查询
+  setTimeout('checkOrderStatus()', 5000);    //5秒后查询*/
 
 </script>
 </body>
