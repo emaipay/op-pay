@@ -7,12 +7,14 @@
   <script src="https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js"></script>
   <script src="https://cdn.bootcss.com/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
   <script src="${ctx}/resources/js/app.js"></script>
+  <script type="text/javascript" src="${ctx}/resources/js/jquery.min.js"></script>
   <script type="text/javascript" src="${ctx}/resources/js/qrcode.min.js"></script>
   <#if target?? && target == 1>
-    <title>微信扫码支付</title>
-    <#else>
-    <title>支付宝扫码支付</title>
-  </#if>
+  <title>微信扫码支付</title>
+  <#else>
+  <title>支付宝扫码支付</title>
+</
+#if>
 </head>
 <body style="background: #F6F6F6">
 <div class="recharge-content">
@@ -21,8 +23,8 @@
   </div>
   <div>下单时间：${orderTime}</div>
   <div class="order-amount">下单金额：<span>${amount}元</span></div>
-  <div class="qr-code" id="code" ></div>
-  <a class="screenshot" id="screenshot" href="invoke://screencapture" >点击保存截屏</a>
+  <div class="qr-code" id="code"></div>
+  <a class="screenshot" id="screenshot" href="invoke://screencapture">点击保存截屏</a>
   <#if target?? && target == 1>
   <div class="explain">
     使用说明：一键保存成截屏图片，打开微信扫一扫，点击“相册”并选择截屏图片即可。
@@ -32,42 +34,57 @@
   <div class="explain">
     使用说明：一键保存成截屏图片，打开支付宝扫一扫，点击“相册”并选择截屏图片即可。
   </div>
-  <a class="btnAlipay" href="alipays://" >马上去支付宝扫码</a>
-</#if>
+  <a class="btnAlipay" href="alipays://">马上去支付宝扫码</a>
+</
+#if>
 </div>
 
 <script>
-  if (!isApp()){
+  if (!isApp()) {
     document.getElementById('screenshot').style.display = 'none'
   }
   var maxtime = ${leftTime} //一个小时，按秒计算，自己调整!
-  function CountDown () {
-    if (maxtime >= 0) {
-      hours = Math.floor(maxtime / 3600)
-      minutes = Math.floor(maxtime / 60 % 60)
-      seconds = Math.floor(maxtime % 60)
-      msg = '距离截止支付时间还有：<span>' + hours + '</span>小时<span>' + minutes + '</span>分<span>' + seconds + '</span>秒'
-      document.all['timer'].innerHTML = msg
-      --maxtime
-    } else {
-      clearInterval(timer)
-      alert('充值二维码已失效，请返回重新充值')
-      if (!isFromMobile()){
-        window.location.href = 'pay-success://'
+    function CountDown () {
+      if (maxtime >= 0) {
+        hours = Math.floor(maxtime / 3600)
+        minutes = Math.floor(maxtime / 60 % 60)
+        seconds = Math.floor(maxtime % 60)
+        msg = '距离截止支付时间还有：<span>' + hours + '</span>小时<span>' + minutes + '</span>分<span>' + seconds + '</span>秒'
+        document.all['timer'].innerHTML = msg
+        --maxtime
+      } else {
+        clearInterval(timer)
+        alert('充值二维码已失效，请返回重新充值')
+        if (isFromMobile()) {
+          window.location.href = 'pay-success://'
+        }
       }
     }
-  }
 
   timer = setInterval(CountDown, 1000)
 
-  var code = new QRCode(document.getElementById("code"), {
-    text: "${returnUrl}",
+  var code = new QRCode(document.getElementById('code'), {
+    text: '${returnUrl}',
     width: 280,
     height: 280,
-    colorDark : "#000000",
-    colorLight : "#ffffff",
-    correctLevel : QRCode.CorrectLevel.H
-  });
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  })
+
+  function checkOrderStatus () {
+    $.get('${ctx}/pay/order/status?billNo=${billNo}', function (result) {
+      if (result.success == true && result.respMsg != '0') {
+        if (isFromMobile()) {
+          window.location.href = 'pay-success://'
+        }
+      } else {
+        alert(result.respMsg)
+      }
+    })
+  }
+
+  setTimeout('checkOrderStatus()', 5000);    //5秒后查询
 
 </script>
 </body>

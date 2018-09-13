@@ -369,6 +369,28 @@ public class PayOrderController extends GenericController {
      * @return
      */
     @ResponseBody
+    @RequestMapping(value = "/order/status", method = RequestMethod.GET)
+    public ResultDTO<?> queryStatus(HttpServletRequest request, Model model) {
+        String billno = request.getParameter("billNo");
+        if(StringUtils.isBlank(billno)){
+            return ResultDTO.error(Constants.NO_ORDER, "未查询到该订单!");
+        }
+        PayOrder po = payOrderService.queryOrderByConnBillno(billno);
+        if (po == null) {
+            PayLog.getLogger().error("[支付订单提交:{}]未查询到该订单.", billno);
+            return ResultDTO.error(Constants.NO_ORDER, "未查询到该订单!");
+        }
+
+        return ResultDTO.success(po.getOrderStatus().getValue());
+    }
+
+    /**
+     * 订单查询方法
+     *
+     * @param request
+     * @return
+     */
+    @ResponseBody
     @RequestMapping(value = "/order/query", method = RequestMethod.GET)
     public ResultDTO<PayQueryOrderDto> queryOrder(HttpServletRequest request, Model model) {
         try {
@@ -395,7 +417,7 @@ public class PayOrderController extends GenericController {
             }
             PayOrder po = payOrderService.queryOrderByConnBillno(billno);
             if (po == null) {
-                PayLog.getLogger().error("[支付订单提交:{}]未查询到该订单.", billno, str);
+                PayLog.getLogger().error("[支付订单提交:{}]未查询到该订单{}.", billno, str);
                 return ResultDTO.error(Constants.NO_ORDER, "未查询到该订单!");
             }
             if (po.getOrderStatus().equals(PayOrder.OrderStatus.未付款)) {
