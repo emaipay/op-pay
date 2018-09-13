@@ -123,10 +123,15 @@ if (window.FastClick) {
   FastClick.attach(document.body)
 }
 
-function isApp() {
+function isFromMobile() {
   var ua = navigator.userAgent
   var app = ua.indexOf('LotteryApp') > -1
   var android = ua.indexOf('Android') > -1
   var ios = ua.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/) //ios终端
   return app || android || ios
+}
+
+function isApp() {
+  var ua = navigator.userAgent
+  return ua.indexOf('LotteryApp') > -1
 }
