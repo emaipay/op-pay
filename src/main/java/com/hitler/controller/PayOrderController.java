@@ -262,7 +262,7 @@ public class PayOrderController extends GenericController {
                     model.addAttribute("billNo", billNo);
                     model.addAttribute("orderTime", DateUtil.dateToStr(po.getCreatedDate()));
                     // payOrderService.save(po);
-                    return "/pay/scan";
+                    return "/pay/scanPay";
             }
 
         } catch (Exception e) {
