@@ -52,7 +52,9 @@
     } else {
       clearInterval(timer)
       alert('充值二维码已失效，请返回重新充值')
-      window.location.href = 'pay-success://'
+      if (!isFromMobile()){
+        window.location.href = 'pay-success://'
+      }
     }
   }
 
