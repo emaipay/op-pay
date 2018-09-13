@@ -251,7 +251,7 @@ public class PayOrderController extends GenericController {
                         model.addAttribute("error", JSON.toJSONString(dto));
                         po.setOrderStatus(OrderStatus.支付失败);
                         po.setOrderStatusDesc(dto.getRespMsg());
-                         payOrderService.update(po);
+                        payOrderService.update(po);
                     }
                     break;
                 case 3: //扫码支付
@@ -261,6 +261,9 @@ public class PayOrderController extends GenericController {
                     model.addAttribute("amount", po.getOrderAmount());
                     model.addAttribute("billNo", billNo);
                     model.addAttribute("orderTime", DateUtil.dateToStr(po.getCreatedDate()));
+                    long leftTime = (DateUtil.addMinute(po.getCreatedDate(), 60 * 2).getTime() - System.currentTimeMillis()) / 1000;
+                    leftTime = leftTime > 0 ? leftTime : 0;
+                    model.addAttribute("leftTime", leftTime);
                     // payOrderService.save(po);
                     return "/pay/scanPay";
             }

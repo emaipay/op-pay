@@ -40,7 +40,7 @@
   if (!isApp()){
     document.getElementById('screenshot').style.display = 'none'
   }
-  var maxtime = 2 * 60 * 60 //一个小时，按秒计算，自己调整!
+  var maxtime = ${leftTime} //一个小时，按秒计算，自己调整!
   function CountDown () {
     if (maxtime >= 0) {
       hours = Math.floor(maxtime / 3600)
