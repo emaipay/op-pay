@@ -13,8 +13,7 @@
   <title>微信扫码支付</title>
   <#else>
   <title>支付宝扫码支付</title>
-</
-#if>
+</#if>
 </head>
 <body style="background: #F6F6F6">
 <div class="recharge-content">
@@ -35,16 +34,15 @@
     使用说明：一键保存成截屏图片，打开支付宝扫一扫，点击“相册”并选择截屏图片即可。
   </div>
   <a class="btnAlipay" href="alipays://">马上去支付宝扫码</a>
-</
-#if>
+</#if>
 </div>
 
 <script>
   if (!isApp()) {
     document.getElementById('screenshot').style.display = 'none'
   }
-  var maxtime = 2 * 60 * 60//一个小时，按秒计算，自己调整!
-  function CountDown () {
+  var maxtime = ${leftTime}//一个小时，按秒计算，自己调整!
+  function countDown () {
     if (maxtime >= 0) {
       hours = Math.floor(maxtime / 3600)
       minutes = Math.floor(maxtime / 60 % 60)
@@ -61,7 +59,7 @@
     }
   }
 
-  timer = setInterval(CountDown, 1000)
+  timer = setInterval(countDown, 1000)
 
   var code = new QRCode(document.getElementById('code'), {
     text: '${returnUrl}',
@@ -72,19 +70,19 @@
     correctLevel: QRCode.CorrectLevel.H
   })
 
-  /*function checkOrderStatus () {
+  function checkOrderStatus () {
     $.get('${ctx}/pay/order/status?billNo=${billNo}', function (result) {
       if (result.success == true && result.respMsg != '0') {
         if (isFromMobile()) {
-          window.location.href = 'pay-success://'
+            window.location.href = 'pay-success://'
         }
       } else {
-        alert(result.respMsg)
+          alert(result.respMsg)
       }
     })
   }
 
-  setTimeout('checkOrderStatus()', 5000);    //5秒后查询*/
+  setInterval(checkOrderStatus, 5000);    //5秒后查询
 
 </script>
 </body>

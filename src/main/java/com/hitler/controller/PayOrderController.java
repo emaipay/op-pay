@@ -264,7 +264,6 @@ public class PayOrderController extends GenericController {
                     long leftTime = (DateUtil.addMinute(po.getCreatedDate(), 60 * 2).getTime() - System.currentTimeMillis()) / 1000;
                     leftTime = leftTime > 0 ? leftTime : 0;
                     model.addAttribute("leftTime", leftTime);
-                    // payOrderService.save(po);
                     return "/pay/scanPay";
             }
 
